@@ -136,16 +136,6 @@
         <p style="font-size:14px;color:#6b7280;margin-top:4px;">V-Ray is recommended for best Threekit compatibility and photorealistic results</p>
       </div>
       
-      <div class="form-group">
-        <label for="experienceLevel">What's your experience level with 3D modeling?</label>
-        <select id="experienceLevel">
-          <option value="">Select Experience Level</option>
-          <option value="beginner">Beginner (0-1 years)</option>
-          <option value="intermediate">Intermediate (1-3 years)</option>
-          <option value="advanced">Advanced (3-5 years)</option>
-          <option value="expert">Expert (5+ years)</option>
-        </select>
-      </div>
       <div class="form-row">
         <button class="next-btn" onclick="prevStep(2, 1)" style="background:#6b7280">Previous</button>
         <button class="next-btn" onclick="nextStep(2, 3)">Next</button>
@@ -166,6 +156,17 @@
           <option value="Modo">Modo</option>
           <option value="Houdini">Houdini</option>
           <option value="Other">Other</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="experienceLevel">What's your experience level with 3D modeling?</label>
+        <select id="experienceLevel">
+          <option value="">Select Experience Level</option>
+          <option value="beginner">Beginner (0-1 years)</option>
+          <option value="intermediate">Intermediate (1-3 years)</option>
+          <option value="advanced">Advanced (3-5 years)</option>
+          <option value="expert">Expert (5+ years)</option>
         </select>
       </div>
       <div class="form-row">
@@ -927,7 +928,7 @@
       }
       
       // Update progress to 100%
-      updateProgressBar(7);
+      updateProgressBar(8);
       
       // Scroll to top
       window.scrollTo(0, 0);
@@ -2501,27 +2502,50 @@
         const originalMainStyle = document.querySelector('main').style.cssText;
         const originalGuideStyle = guideContent.style.cssText;
         
-        // Prepare for printing with 180 DPI optimization and full width
-        document.body.style.cssText = 'margin: 0; padding: 0; background: white; color: black; min-height: auto; transform: scale(0.85); font-size: 8px; line-height: 1.0; width: 100%; max-width: none;';
-        document.querySelector('main').style.cssText = 'max-width: 100%; margin: 0; padding: 5px; background: white; width: 100%;';
-        guideContent.style.cssText = 'max-width: 100%; margin: 0; padding: 5px; background: white; box-shadow: none; border: none; width: 100%;';
+        // Prepare for printing with 140 DPI optimization and full width
+        document.body.style.cssText = 'margin: 0; padding: 0; background: white; color: black; min-height: auto; transform: scale(1.0); font-size: 10px; line-height: 1.2; width: 100%; max-width: none;';
+        document.querySelector('main').style.cssText = 'max-width: 100%; margin: 0; padding: 0; background: white; width: 100%;';
+        guideContent.style.cssText = 'max-width: 100%; margin: 0; padding: 0; background: white; box-shadow: none; border: none; width: 100%;';
         
-        // Add 180 DPI optimization meta tag
+        // Add 140 DPI optimization meta tag
         const existingMeta = document.querySelector('meta[name="viewport"]');
         if (existingMeta) {
-          existingMeta.setAttribute('content', 'width=device-width, initial-scale=0.85, user-scalable=no');
+          existingMeta.setAttribute('content', 'width=device-width, initial-scale=1.0, user-scalable=no');
         }
         
-        // Force 180 DPI styling
-        document.body.classList.add('dpi-180');
+        // Force 140 DPI styling
+        document.body.classList.add('dpi-140');
         
-        // Inject CSS to hide browser headers/footers
+        // Calculate exact content height to eliminate white space
+        const contentHeight = guideContent.scrollHeight;
+        const heightInInches = Math.ceil(contentHeight / 96) + 0.5; // Convert pixels to inches + small buffer
+        
+        // Inject CSS for continuous vertical document with exact height
         const hideHeadersFootersCSS = `
-          @page { margin: 0 !important; }
+          @page { 
+            size: 8.5in ${heightInInches}in;
+            margin: 0 !important; 
+          }
           @media print {
-            @page { margin: 0 !important; }
-            body { margin: 0 !important; padding: 0 !important; }
-            * { -webkit-print-color-adjust: exact !important; }
+            @page { 
+              size: 8.5in ${heightInInches}in;
+              margin: 0 !important; 
+            }
+            body { 
+              margin: 0 !important; 
+              padding: 0 !important; 
+              width: 100% !important;
+              max-width: none !important;
+            }
+            * { 
+              -webkit-print-color-adjust: exact !important;
+              page-break-inside: avoid !important;
+              page-break-after: avoid !important;
+              page-break-before: avoid !important;
+              break-inside: avoid !important;
+              break-after: avoid !important;
+              break-before: avoid !important;
+            }
           }
         `;
         const style = document.createElement('style');
@@ -2618,15 +2642,15 @@
           <style>
             body {
               font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-              line-height: 1.0;
+              line-height: 1.2;
               color: #333;
-              max-width: 100%;
+              max-width: none;
               margin: 0;
-              padding: 5px;
+              padding: 0;
               background: white;
               min-height: auto;
-              font-size: 8px;
-              transform: scale(0.85);
+              font-size: 10px;
+              transform: scale(1.0);
               transform-origin: top left;
               width: 100%;
             }
@@ -2759,14 +2783,31 @@
             
             @page {
               margin: 0 !important;
-              size: A4;
+              size: 8.5in auto;
             }
             
             @media print {
               @page { margin: 0 !important; }
-              body { margin: 0; padding: 5px; width: 100%; }
+              body { margin: 0; padding: 0; width: 100%; max-width: none; }
               .info-box { break-inside: avoid; margin: 8px 0; padding: 12px; }
-              h1, h2, h3, h4, h5, h6 { page-break-after: avoid; margin: 5px 0; }
+              h1, h2, h3, h4, h5, h6 { 
+                margin: 5px 0;
+                page-break-inside: avoid !important;
+                page-break-after: avoid !important;
+                page-break-before: avoid !important;
+                break-inside: avoid !important;
+                break-after: avoid !important;
+                break-before: avoid !important;
+              }
+              
+              * { 
+                page-break-inside: avoid !important;
+                page-break-after: avoid !important;
+                page-break-before: avoid !important;
+                break-inside: avoid !important;
+                break-after: avoid !important;
+                break-before: avoid !important;
+              }
               
               .workflow-grid,
               .naming-convention-grid {

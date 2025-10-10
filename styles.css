@@ -675,36 +675,68 @@ button,
   /* DPI optimization for different print settings */
   @media print {
     @page {
-      size: A4;
-      margin: 0; /* Remove browser default margins for headers/footers */
+      size: 8.5in auto; /* Auto height to fit content exactly */
+      margin: 0 !important; /* Force no margins */
     }
     
-    /* Hide browser-generated headers and footers */
+    /* Override browser default margins */
     @page :first {
-      margin-top: 0;
+      margin: 0 !important;
     }
     
     @page :left {
-      margin-left: 0;
-      margin-right: 0;
+      margin: 0 !important;
     }
     
     @page :right {
-      margin-left: 0;
-      margin-right: 0;
+      margin: 0 !important;
+    }
+    
+    /* Hide browser headers and footers */
+    @page {
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
+    
+    /* Single continuous page with no margins */
+    @page :first {
+      margin: 0; /* No margins */
+    }
+    
+    @page :left {
+      margin: 0; /* No margins */
+    }
+    
+    @page :right {
+      margin: 0; /* No margins */
     }
     
     body {
       font-size: 10px !important;
       line-height: 1.2 !important;
+      width: 100% !important;
+      max-width: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      height: auto !important;
+      min-height: auto !important;
     }
     
-    /* 180 DPI optimization */
-    @media print and (min-resolution: 180dpi) {
+    /* Ensure content fits exactly */
+    .guide-content {
+      height: auto !important;
+      min-height: auto !important;
+      overflow: visible !important;
+    }
+    
+    /* 140 DPI optimization */
+    @media print and (min-resolution: 140dpi) {
       body {
-        font-size: 8px !important;
-        line-height: 1.0 !important;
-        transform: scale(0.85) !important;
+        font-size: 10px !important;
+        line-height: 1.2 !important;
+        transform: scale(1.0) !important;
       }
       
       .workflow-grid,
@@ -751,11 +783,25 @@ button,
   .guide-content {
     max-width: none !important;
     margin: 0 !important;
-    padding: 5px !important;
+    padding: 0 !important;
     width: 100% !important;
     background: transparent !important;
     box-shadow: none !important;
     border-radius: 0 !important;
+  }
+  
+  /* Ensure all content uses full width */
+  .guide-content * {
+    max-width: none !important;
+  }
+  
+  /* Specific adjustments for full-width layout */
+  .guide-content .workflow-grid,
+  .guide-content .naming-convention-grid {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
   
   .workflow-grid,
@@ -812,11 +858,44 @@ button,
   }
   
   h1, h2, h3, h4, h5, h6 {
-    page-break-after: avoid !important;
-    page-break-inside: avoid !important;
     margin-top: 0 !important;
     margin-bottom: 10px !important;
   }
+  
+  /* Force no page breaks - everything on one page */
+  * {
+    page-break-inside: avoid !important;
+    page-break-after: avoid !important;
+    page-break-before: avoid !important;
+    break-inside: avoid !important;
+    break-after: avoid !important;
+    break-before: avoid !important;
+  }
+  
+    /* Force single page layout with exact content height */
+    html, body {
+      height: auto !important;
+      min-height: auto !important;
+      max-height: none !important;
+      overflow: visible !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+    
+    /* Ensure content fits exactly with no extra space */
+    .guide-content {
+      height: auto !important;
+      min-height: auto !important;
+      max-height: none !important;
+      padding-bottom: 0 !important;
+      margin-bottom: 0 !important;
+    }
+    
+    /* Remove any extra space from the last element */
+    .guide-content > *:last-child {
+      margin-bottom: 0 !important;
+      padding-bottom: 0 !important;
+    }
   
   h1 {
     font-size: 24px !important;
