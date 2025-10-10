@@ -1,0 +1,36 @@
+{
+  "clientId": "furniture-retailer",
+  "clientName": "Modern Furniture Co",
+  "industry": "furniture",
+  "projectType": "webgl-viewer",
+  "knownInfo": {
+    "3dSoftware": "Blender",
+    "exportFormat": "GLB/GLTF",
+    "assetOrganization": "Single combined meshes",
+    "materialApproach": "Use existing materials from DCC",
+    "targetPlatform": "WebGL"
+  },
+  "setupGuide": {
+    "focus": "Simple 3D furniture viewing with high visual quality",
+    "keyRequirements": [
+      "Keep furniture pieces as single objects for simplicity",
+      "High-quality textures for realistic appearance",
+      "Optimized polygon count for web performance",
+      "Clear file naming: 'Product_Material_Style' (e.g., 'Chair_Oak_Modern')"
+    ],
+    "exportSettings": {
+      "format": "GLB",
+      "units": "Centimeters",
+      "scaleFactor": 1.0,
+      "includeMaterials": true,
+      "includeTextures": true,
+      "polygonLimit": 30000,
+      "compression": "Draco (optional)"
+    },
+    "materialGuidance": {
+      "usePrincipledBSDF": true,
+      "namingConvention": "MaterialType_Finish (e.g., Wood_Oak, Fabric_Leather)",
+      "textureRequirements": "High quality, web-optimized"
+    }
+  }
+}

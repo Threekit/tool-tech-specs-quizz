@@ -1,0 +1,273 @@
+<!--
+  Project: Threekit Onboarding Dashboard
+  Goal: This HTML provides an interactive questionnaire to guide new Threekit users.
+  It helps clients determine whether they should focus on 3D asset setup (e.g., exporting FBX files, organizing models for configurability)
+  or web embedding (e.g., integrating Threekit Player or APIs into their website).
+  Each path offers tailored recommendations and links to official documentation.
+  This file is meant to be used as a dynamic front-end template that can later fetch
+  per-client recommendation data (JSON or backend) to show only relevant guidance for each project.
+  Example client: Atletica Gym — using 3ds Max with separate components for better configuration.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Threekit Onboarding Dashboard</title>
+  <style>
+    :root { --ink:#0f172a; --muted:#475569; --bg:#ffffff; --line:#e2e8f0; --accent:#2563eb; --green:#22c55e; }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;font-family:ui-sans-serif,system-ui,Roboto,Helvetica,Arial;background:var(--bg);color:var(--ink)}
+    header{padding:16px 24px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:10}
+    h1{font-size:28px;margin:0}
+    main{max-width:900px;margin:32px auto;padding:0 20px;}
+    section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px;margin-bottom:24px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+    h2{margin-top:0;font-size:22px}
+    .question{margin:18px 0}
+    .option{display:block;margin:8px 0;padding:10px 12px;border:1px solid var(--line);border-radius:8px;cursor:pointer;transition:background .2s}
+    .option:hover{background:#f8fafc}
+    .option.active{border-color:var(--accent);background:#eff6ff}
+    .next-btn{display:inline-block;margin-top:16px;padding:10px 16px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer}
+    .next-btn:hover{background:#1d4ed8}
+    .hidden{display:none}
+    .summary{border-left:4px solid var(--green);background:#f0fdf4;padding:16px;border-radius:8px;margin-top:16px}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Threekit Project Onboarding</h1>
+    <button onclick="window.print()" class="next-btn" style="background:#475569">Export to PDF</button>
+  </header>
+
+  <main>
+    <section id="intro">
+      <h2>Welcome!</h2>
+      <p>This guided questionnaire helps new users identify what kind of 3D project they're building and leads them to the right Threekit documentation or setup guide. Example: setting up 3D assets for <a href="https://atletica.de/" target="_blank">Atletica Gym</a>.</p>
+      <button class="next-btn" onclick="nextStep('intro','pathSelection')">Start</button>
+    </section>
+
+    <section id="pathSelection" class="step hidden">
+      <h2>Choose Your Onboarding Path</h2>
+      <div class="question">
+        <div class="option" onclick="selectOption(this,'path','3D Asset Setup')">3D Asset Setup</div>
+        <div class="option" onclick="selectOption(this,'path','Web Embedding Setup')">Web Embedding Setup</div>
+      </div>
+      <button class="next-btn" onclick="startPath()">Continue</button>
+    </section>
+
+    <!-- 3D Asset Setup Path -->
+    <section id="3d-software" class="step hidden">
+      <h2>1. What 3D software do you primarily use?</h2>
+      <div class="question">
+        <div class="option" onclick="selectOption(this,'3d-software','Autodesk 3ds Max')">Autodesk 3ds Max</div>
+        <div class="option" onclick="selectOption(this,'3d-software','Autodesk Maya')">Autodesk Maya</div>
+        <div class="option" onclick="selectOption(this,'3d-software','Blender')">Blender</div>
+        <div class="option" onclick="selectOption(this,'3d-software','Cinema 4D')">Cinema 4D</div>
+      </div>
+      <button class="next-btn" onclick="nextStep('3d-software','export-format')">Next</button>
+    </section>
+
+    <section id="export-format" class="step hidden">
+      <h2>2. What do you plan to export from your DCC tool?</h2>
+      <div class="question">
+        <div class="option" onclick="selectOption(this,'export-format','FBX (Recommended)')">FBX (Recommended for Threekit)</div>
+        <div class="option" onclick="selectOption(this,'export-format','GLB / GLTF')">GLB / GLTF</div>
+        <div class="option" onclick="selectOption(this,'export-format','USDZ')">USDZ (iOS AR)</div>
+      </div>
+      <button class="next-btn" onclick="nextStep('export-format','asset-organization')">Next</button>
+    </section>
+
+    <section id="asset-organization" class="step hidden">
+      <h2>3. How do you plan to organize your 3D assets?</h2>
+      <div class="question">
+        <div class="option" onclick="selectOption(this,'asset-organization','Single combined meshes')">Single combined meshes</div>
+        <div class="option" onclick="selectOption(this,'asset-organization','Separated parts by materials')">Separated parts by materials</div>
+        <div class="option" onclick="selectOption(this,'asset-organization','Separated by component (e.g., bolts, panels, frames)')">Separated by component (recommended)</div>
+      </div>
+      <button class="next-btn" onclick="nextStep('asset-organization','material-setup')">Next</button>
+    </section>
+
+    <section id="material-setup" class="step hidden">
+      <h2>4. How will you handle materials and textures?</h2>
+      <div class="question">
+        <div class="option" onclick="selectOption(this,'material-setup','Use existing materials from DCC')">Use existing materials from DCC</div>
+        <div class="option" onclick="selectOption(this,'material-setup','Create new materials in Threekit')">Create new materials in Threekit</div>
+        <div class="option" onclick="selectOption(this,'material-setup','Mix of both approaches')">Mix of both approaches</div>
+      </div>
+      <button class="next-btn" onclick="showSummary()">Finish</button>
+    </section>
+
+    <!-- Web Embedding Path -->
+    <section id="q1-web" class="step hidden">
+      <h2>1. What is your main goal for the web setup?</h2>
+      <div class="question">
+        <div class="option" onclick="selectOption(this,'q1-web','Embed a simple 3D viewer')">Embed a simple 3D viewer</div>
+        <div class="option" onclick="selectOption(this,'q1-web','Build a product configurator')">Build a product configurator</div>
+        <div class="option" onclick="selectOption(this,'q1-web','Integrate with custom backend/API')">Integrate with custom backend/API</div>
+      </div>
+      <button class="next-btn" onclick="nextStep('q1-web','q2-web')">Next</button>
+    </section>
+
+    <section id="q2-web" class="step hidden">
+      <h2>2. Which platform or framework will you use?</h2>
+      <div class="question">
+        <div class="option" onclick="selectOption(this,'q2-web','HTML/JS Vanilla')">HTML/JS Vanilla</div>
+        <div class="option" onclick="selectOption(this,'q2-web','React')">React</div>
+        <div class="option" onclick="selectOption(this,'q2-web','Vue')">Vue</div>
+        <div class="option" onclick="selectOption(this,'q2-web','Other')">Other</div>
+      </div>
+      <button class="next-btn" onclick="showSummary()">Finish</button>
+    </section>
+
+    <section id="summary" class="hidden">
+      <h2>Your Setup Summary</h2>
+      <div class="summary" id="summaryContent"></div>
+      <p>Next steps:</p>
+      <ul id="nextLinks"></ul>
+    </section>
+  </main>
+
+  <script>
+    const answers = {};
+    let clientConfig = null;
+
+    // Load client configuration
+    async function loadClientConfig() {
+      try {
+        // Try to load from URL parameter first, then default
+        const urlParams = new URLSearchParams(window.location.search);
+        const clientId = urlParams.get('client') || 'atletica-gym';
+        const configFile = `client-config${clientId === 'atletica-gym' ? '' : '-simple'}.json`;
+        
+        const response = await fetch(configFile);
+        clientConfig = await response.json();
+        
+        // Apply client customizations
+        applyClientCustomizations();
+      } catch (error) {
+        console.log('No client config found, using default mode');
+        clientConfig = null;
+      }
+    }
+
+    function applyClientCustomizations() {
+      if (!clientConfig) return;
+
+      // Update welcome message
+      const welcomeSection = document.getElementById('intro');
+      const welcomeText = welcomeSection.querySelector('p');
+      welcomeText.innerHTML = clientConfig.customizations.welcomeMessage;
+
+      // Hide irrelevant questions
+      if (clientConfig.customizations.skipQuestions) {
+        clientConfig.customizations.skipQuestions.forEach(questionId => {
+          const element = document.getElementById(questionId);
+          if (element) element.style.display = 'none';
+        });
+      }
+
+      // Pre-select recommended options
+      if (clientConfig.customizations.customRecommendations) {
+        Object.keys(clientConfig.customizations.customRecommendations).forEach(questionId => {
+          const recommendation = clientConfig.customizations.customRecommendations[questionId];
+          const questionElement = document.getElementById(questionId);
+          if (questionElement) {
+            const options = questionElement.querySelectorAll('.option');
+            options.forEach(option => {
+              if (option.textContent.includes(recommendation.preferred)) {
+                option.classList.add('recommended');
+                option.style.borderLeft = '4px solid #22c55e';
+                option.style.backgroundColor = '#f0fdf4';
+              }
+            });
+          }
+        });
+      }
+    }
+
+    function selectOption(el,qid,value){
+      document.querySelectorAll(`#${qid} .option`).forEach(o=>o.classList.remove('active'));
+      el.classList.add('active');
+      answers[qid]=value;
+    }
+
+    function nextStep(current,next){
+      document.getElementById(current).classList.add('hidden');
+      document.getElementById(next).classList.remove('hidden');
+      window.scrollTo(0,0);
+    }
+
+    function startPath(){
+      const path = answers.path;
+      document.getElementById('pathSelection').classList.add('hidden');
+      if(path==='3D Asset Setup'){
+        document.getElementById('3d-software').classList.remove('hidden');
+      } else if(path==='Web Embedding Setup'){
+        document.getElementById('q1-web').classList.remove('hidden');
+      }
+      window.scrollTo(0,0);
+    }
+
+    function showSummary(){
+      document.querySelectorAll('.step').forEach(s=>s.classList.add('hidden'));
+      document.getElementById('summary').classList.remove('hidden');
+
+      let html='';
+      let links='';
+
+      if(answers.path==='3D Asset Setup'){
+        html += `<p><strong>Path:</strong> ${answers.path}</p>`+
+                `<p><strong>Software:</strong> ${answers['3d-software']||'-'}</p>`+
+                `<p><strong>Export Format:</strong> ${answers['export-format']||'-'}</p>`+
+                `<p><strong>Organization:</strong> ${answers['asset-organization']||'-'}</p>`+
+                `<p><strong>Material Setup:</strong> ${answers['material-setup']||'-'}</p>`;
+        
+        // Add client-specific recommendations
+        if (clientConfig && clientConfig.customizations.industrySpecificTips) {
+          html += `<div style="margin-top: 16px; padding: 12px; background: #f8fafc; border-radius: 8px;">`;
+          html += `<h4>💡 Tips for ${clientConfig.clientName}:</h4><ul>`;
+          clientConfig.customizations.industrySpecificTips.forEach(tip => {
+            html += `<li>${tip}</li>`;
+          });
+          html += `</ul></div>`;
+        }
+
+        if(answers['asset-organization'] && answers['asset-organization'].includes('component')){
+          html += `<p>✅ Excellent! Keeping parts separated improves reusability and material assignment.</p>`;
+        } else {
+          html += `<p>⚠️ Consider separating objects like bolts or panels for better control in Threekit.</p>`;
+        }
+
+        // Use client-specific next steps if available
+        if (clientConfig && clientConfig.customizations.nextSteps) {
+          clientConfig.customizations.nextSteps.forEach(step => {
+            const priority = step.priority === 'high' ? '🔴' : '🟡';
+            links += `<li>${priority} <a href='${step.link}' target='_blank'>${step.title}</a> - ${step.description}</li>`;
+          });
+        } else {
+          // Default links
+          links += `<li><a href='https://developer.threekit.com/docs/getting-started' target='_blank'>Getting Started</a></li>`+
+                   `<li><a href='https://community.threekit.com/learn/workflows/best-practices/general-3d-content-creation' target='_blank'>3D Content Creation</a></li>`+
+                   `<li><a href='https://community.threekit.com/learn/workflows/best-practices/3d-asset-naming-conventions' target='_blank'>Naming Conventions</a></li>`;
+        }
+      }
+
+      if(answers.path==='Web Embedding Setup'){
+        html += `<p><strong>Path:</strong> ${answers.path}</p>`+
+                `<p><strong>Goal:</strong> ${answers['q1-web']||'-'}</p>`+
+                `<p><strong>Framework:</strong> ${answers['q2-web']||'-'}</p>`;
+        links += `<li><a href='https://developer.threekit.com/docs/embedding-a-threekit-player' target='_blank'>Embed the Player</a></li>`+
+                 `<li><a href='https://developer.threekit.com/reference/player-api' target='_blank'>Player API</a></li>`+
+                 `<li><a href='https://developer.threekit.com/reference/rest-api' target='_blank'>REST API</a></li>`;
+      }
+
+      document.getElementById('summaryContent').innerHTML=html;
+      document.getElementById('nextLinks').innerHTML=links;
+      window.scrollTo(0,0);
+    }
+
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', loadClientConfig);
+  </script>
+</body>
+</html>

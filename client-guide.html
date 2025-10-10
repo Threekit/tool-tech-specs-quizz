@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>3D Asset Setup Guide</title>
+  <style>
+    :root { --ink:#0f172a; --muted:#475569; --bg:#ffffff; --line:#e2e8f0; --accent:#2563eb; --green:#22c55e; --orange:#f59e0b; }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;font-family:ui-sans-serif,system-ui,Roboto,Helvetica,Arial;background:var(--bg);color:var(--ink);line-height:1.6}
+    header{padding:16px 24px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:10}
+    h1{font-size:28px;margin:0}
+    main{max-width:1000px;margin:32px auto;padding:0 20px;}
+    section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:32px;margin-bottom:24px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+    h2{margin-top:0;font-size:24px;color:var(--ink)}
+    h3{font-size:20px;color:var(--ink);margin-top:24px}
+    h4{font-size:18px;color:var(--muted);margin-top:20px}
+    .step{background:#f8fafc;border-left:4px solid var(--accent);padding:20px;margin:16px 0;border-radius:8px}
+    .warning{background:#fef3c7;border-left:4px solid var(--orange);padding:16px;margin:16px 0;border-radius:8px}
+    .success{background:#f0fdf4;border-left:4px solid var(--green);padding:16px;margin:16px 0;border-radius:8px}
+    .code{background:#f1f5f9;padding:12px;border-radius:8px;font-family:monospace;margin:8px 0}
+    ul,ol{padding-left:24px}
+    li{margin:8px 0}
+    .highlight{background:#eff6ff;padding:2px 6px;border-radius:4px;font-weight:500}
+    .external-link{color:var(--accent);text-decoration:none;font-weight:500}
+    .external-link:hover{text-decoration:underline}
+    .next-btn{display:inline-block;margin-top:16px;padding:12px 20px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;text-decoration:none;font-weight:500}
+    .next-btn:hover{background:#1d4ed8}
+    .client-info{background:#f0fdf4;border:1px solid var(--green);border-radius:8px;padding:20px;margin-bottom:24px}
+    .hidden{display:none}
+    .loading{text-align:center;padding:40px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>3D Asset Setup Guide</h1>
+    <button onclick="window.print()" class="next-btn" style="background:#475569">Export to PDF</button>
+  </header>
+
+  <main>
+    <div class="loading" id="loading">
+      <h2>Loading your setup guide...</h2>
+      <p>Please wait while we prepare your customized instructions.</p>
+    </div>
+
+    <div class="hidden" id="content">
+      <!-- Client-specific content will be loaded here -->
+    </div>
+  </main>
+
+  <script>
+    let clientConfig = null;
+
+    // Load client configuration and generate guide
+    async function loadClientGuide() {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const clientId = urlParams.get('client');
+        
+        if (!clientId) {
+          showError('No client specified');
+          return;
+        }
+
+        // Load client configuration
+        const response = await fetch(`client-config-${clientId}.json`);
+        clientConfig = await response.json();
+        
+        // Generate the customized guide
+        generateGuide();
+        
+      } catch (error) {
+        console.error('Error loading client config:', error);
+        showError('Unable to load client configuration. Please contact support.');
+      }
+    }
+
+    function generateGuide() {
+      const content = document.getElementById('content');
+      const loading = document.getElementById('loading');
+      
+      // Hide loading, show content
+      loading.classList.add('hidden');
+      content.classList.remove('hidden');
+
+      // Generate the guide based on client configuration
+      content.innerHTML = generateGuideContent();
+    }
+
+    function generateGuideContent() {
+      if (!clientConfig) return '';
+
+      const software = clientConfig.knownInfo['3dSoftware'];
+      const exportFormat = clientConfig.knownInfo['exportFormat'];
+      const organization = clientConfig.knownInfo['assetOrganization'];
+      const materials = clientConfig.knownInfo['materialApproach'];
+
+      return `
+        <section class="client-info">
+          <h2>Welcome to Your 3D Setup Guide</h2>
+          <p>This guide has been customized for <strong>${clientConfig.clientName}</strong> based on your project requirements.</p>
+          <p><strong>Project Type:</strong> ${clientConfig.projectType} | <strong>Industry:</strong> ${clientConfig.industry}</p>
+        </section>
+
+        <section>
+          <h2>Your Setup Requirements</h2>
+          <div class="step">
+            <h3>3D Software</h3>
+            <p>You'll be using <strong>${software}</strong> for this project.</p>
+          </div>
+          
+          <div class="step">
+            <h3>Export Format</h3>
+            <p>Export your models as <strong>${exportFormat}</strong> for optimal Threekit compatibility.</p>
+          </div>
+          
+          <div class="step">
+            <h3>Asset Organization</h3>
+            <p>Organize your assets using the <strong>${organization}</strong> approach.</p>
+          </div>
+          
+          <div class="step">
+            <h3>Material Strategy</h3>
+            <p>${materials} for this project.</p>
+          </div>
+        </section>
+
+        ${generateSoftwareSpecificGuide(software, exportFormat)}
+
+        <section>
+          <h2>Project-Specific Requirements</h2>
+          ${generateProjectRequirements()}
+        </section>
+
+        <section>
+          <h2>Export Settings</h2>
+          ${generateExportSettings(exportFormat)}
+        </section>
+
+        <section>
+          <h2>Quality Guidelines</h2>
+          ${generateQualityGuidelines()}
+        </section>
+
+        <section>
+          <h2>Next Steps</h2>
+          <div class="step">
+            <h3>1. Prepare Your Model</h3>
+            <p>Follow the guidelines above to prepare your 3D model in ${software}.</p>
+          </div>
+          
+          <div class="step">
+            <h3>2. Export and Test</h3>
+            <p>Export your model as ${exportFormat} and upload it to <a href="https://studio.threekit.com" class="external-link" target="_blank">Threekit Studio</a> to test.</p>
+          </div>
+          
+          <div class="step">
+            <h3>3. Verify Configuration</h3>
+            <p>Ensure all configurable parts work as expected in the 3D viewer.</p>
+          </div>
+          
+          <div class="step">
+            <h3>4. Advanced Features</h3>
+            <p>For advanced features and integration options, refer to the <a href="https://developer.threekit.com/" class="external-link" target="_blank">Threekit Developer Documentation</a>.</p>
+          </div>
+        </section>
+      `;
+    }
+
+    function generateSoftwareSpecificGuide(software, exportFormat) {
+      const softwareLower = software.toLowerCase().replace(' ', '-').replace('autodesk-', '');
+      
+      const guides = {
+        '3ds-max': `
+          <section>
+            <h2>3ds Max Setup Instructions</h2>
+            <div class="step">
+              <h3>1. Model Organization</h3>
+              <p>Organize your model with separate objects for each configurable part:</p>
+              <ul>
+                <li><strong>Separate by component:</strong> Each part should be its own object</li>
+                <li><strong>Naming convention:</strong> Use clear, descriptive names like <span class="highlight">${clientConfig.setupGuide?.materialGuidance?.namingConvention || 'EquipmentType_PartName_Material'}</span></li>
+                <li><strong>Example:</strong> <span class="code">Barbell_Handle_Steel</span>, <span class="code">Barbell_Weight_Black</span></li>
+              </ul>
+            </div>
+
+            <div class="step">
+              <h3>2. Material Setup</h3>
+              <p>Prepare materials for optimal Threekit compatibility:</p>
+              <ul>
+                <li><strong>Use Standard Materials:</strong> Avoid complex material types</li>
+                <li><strong>Texture naming:</strong> Keep texture file names simple and descriptive</li>
+                <li><strong>Material names:</strong> Use clear names like "Steel_Matte" or "Wood_Oak"</li>
+                <li><strong>UV mapping:</strong> Ensure proper UV unwrapping for all objects</li>
+              </ul>
+            </div>
+
+            <div class="step">
+              <h3>3. Export Settings</h3>
+              <p>Configure 3ds Max for optimal ${exportFormat} export:</p>
+              <div class="code">
+                File → Export → Export Selected → ${exportFormat}<br>
+                • Units: Centimeters<br>
+                • Scale Factor: 1.0<br>
+                • Smoothing Groups: ✓<br>
+                • Materials: ✓<br>
+                • Textures: ✓<br>
+                • Animation: ✗ (unless needed)<br>
+                • Cameras: ✗<br>
+                • Lights: ✗
+              </div>
+            </div>
+          </section>
+        `,
+        'blender': `
+          <section>
+            <h2>Blender Setup Instructions</h2>
+            <div class="step">
+              <h3>1. Model Organization</h3>
+              <p>Organize your model with separate objects for each configurable part:</p>
+              <ul>
+                <li><strong>Separate by component:</strong> Each part should be its own object</li>
+                <li><strong>Naming convention:</strong> Use clear, descriptive names like <span class="highlight">${clientConfig.setupGuide?.materialGuidance?.namingConvention || 'EquipmentType_PartName_Material'}</span></li>
+                <li><strong>Example:</strong> <span class="code">Chair_Seat_Wood</span>, <span class="code">Chair_Legs_Metal</span></li>
+              </ul>
+            </div>
+
+            <div class="step">
+              <h3>2. Material Setup</h3>
+              <p>Prepare materials for optimal Threekit compatibility:</p>
+              <ul>
+                <li><strong>Use Principled BSDF:</strong> This material type works best with Threekit</li>
+                <li><strong>Texture naming:</strong> Keep texture file names simple and descriptive</li>
+                <li><strong>Material names:</strong> Use clear names like "Wood_Oak" or "Metal_Steel"</li>
+                <li><strong>UV mapping:</strong> Ensure proper UV unwrapping for all objects</li>
+              </ul>
+            </div>
+
+            <div class="step">
+              <h3>3. Export Settings</h3>
+              <p>Configure Blender for optimal ${exportFormat} export:</p>
+              <div class="code">
+                File → Export → glTF 2.0 (.glb/.gltf)<br>
+                • Format: ${exportFormat}<br>
+                • Include: Selected Objects<br>
+                • Transform: +Y Up<br>
+                • Geometry: Apply Modifiers ✓<br>
+                • Materials: Export ✓<br>
+                • Textures: Export ✓<br>
+                • Compression: Draco (optional)
+              </div>
+            </div>
+          </section>
+        `,
+        'maya': `
+          <section>
+            <h2>Maya Setup Instructions</h2>
+            <div class="step">
+              <h3>1. Model Organization</h3>
+              <p>Organize your model with separate objects for each configurable part:</p>
+              <ul>
+                <li><strong>Separate by component:</strong> Each part should be its own object</li>
+                <li><strong>Naming convention:</strong> Use clear, descriptive names like <span class="highlight">${clientConfig.setupGuide?.materialGuidance?.namingConvention || 'EquipmentType_PartName_Material'}</span></li>
+                <li><strong>Example:</strong> <span class="code">Machine_Frame_Steel</span>, <span class="code">Machine_Panel_Black</span></li>
+              </ul>
+            </div>
+
+            <div class="step">
+              <h3>2. Material Setup</h3>
+              <p>Prepare materials for optimal Threekit compatibility:</p>
+              <ul>
+                <li><strong>Use Standard Surface:</strong> This material type works best with Threekit</li>
+                <li><strong>Texture naming:</strong> Keep texture file names simple and descriptive</li>
+                <li><strong>Material names:</strong> Use clear names like "Steel_Matte" or "Plastic_Glossy"</li>
+                <li><strong>UV mapping:</strong> Ensure proper UV unwrapping for all objects</li>
+              </ul>
+            </div>
+
+            <div class="step">
+              <h3>3. Export Settings</h3>
+              <p>Configure Maya for optimal ${exportFormat} export:</p>
+              <div class="code">
+                File → Export All → ${exportFormat} export<br>
+                • Units: Centimeters<br>
+                • Scale Factor: 1.0<br>
+                • Smoothing Groups: ✓<br>
+                • Materials: ✓<br>
+                • Textures: ✓<br>
+                • Animation: ✗ (unless needed)<br>
+                • Cameras: ✗<br>
+                • Lights: ✗
+              </div>
+            </div>
+          </section>
+        `,
+        'cinema-4d': `
+          <section>
+            <h2>Cinema 4D Setup Instructions</h2>
+            <div class="step">
+              <h3>1. Model Organization</h3>
+              <p>Organize your model with separate objects for each configurable part:</p>
+              <ul>
+                <li><strong>Separate by component:</strong> Each part should be its own object</li>
+                <li><strong>Naming convention:</strong> Use clear, descriptive names like <span class="highlight">${clientConfig.setupGuide?.materialGuidance?.namingConvention || 'EquipmentType_PartName_Material'}</span></li>
+                <li><strong>Example:</strong> <span class="code">Product_Base_White</span>, <span class="code">Product_Handle_Black</span></li>
+              </ul>
+            </div>
+
+            <div class="step">
+              <h3>2. Material Setup</h3>
+              <p>Prepare materials for optimal Threekit compatibility:</p>
+              <ul>
+                <li><strong>Use Standard Material:</strong> This material type works best with Threekit</li>
+                <li><strong>Texture naming:</strong> Keep texture file names simple and descriptive</li>
+                <li><strong>Material names:</strong> Use clear names like "Plastic_White" or "Metal_Chrome"</li>
+                <li><strong>UV mapping:</strong> Ensure proper UV unwrapping for all objects</li>
+              </ul>
+            </div>
+
+            <div class="step">
+              <h3>3. Export Settings</h3>
+              <p>Configure Cinema 4D for optimal ${exportFormat} export:</p>
+              <div class="code">
+                File → Export → ${exportFormat}<br>
+                • Units: Centimeters<br>
+                • Scale Factor: 1.0<br>
+                • Smoothing Groups: ✓<br>
+                • Materials: ✓<br>
+                • Textures: ✓<br>
+                • Animation: ✗ (unless needed)<br>
+                • Cameras: ✗<br>
+                • Lights: ✗
+              </div>
+            </div>
+          </section>
+        `
+      };
+
+      return guides[softwareLower] || guides['3ds-max'];
+    }
+
+    function generateProjectRequirements() {
+      if (!clientConfig.setupGuide?.keyRequirements) return '';
+
+      return `
+        <div class="step">
+          <h3>Key Requirements for Your Project</h3>
+          <ul>
+            ${clientConfig.setupGuide.keyRequirements.map(req => `<li>${req}</li>`).join('')}
+          </ul>
+        </div>
+      `;
+    }
+
+    function generateExportSettings(exportFormat) {
+      const polygonLimit = clientConfig.setupGuide?.exportSettings?.polygonLimit || 50000;
+      
+      return `
+        <div class="step">
+          <h3>Export Configuration</h3>
+          <ul>
+            <li><strong>Format:</strong> ${exportFormat}</li>
+            <li><strong>Units:</strong> Centimeters</li>
+            <li><strong>Scale Factor:</strong> 1.0</li>
+            <li><strong>Polygon Limit:</strong> ${polygonLimit.toLocaleString()} triangles per object</li>
+            <li><strong>Include Materials:</strong> Yes</li>
+            <li><strong>Include Textures:</strong> Yes</li>
+          </ul>
+        </div>
+      `;
+    }
+
+    function generateQualityGuidelines() {
+      const polygonLimit = clientConfig.setupGuide?.exportSettings?.polygonLimit || 50000;
+      const textureReqs = clientConfig.setupGuide?.materialGuidance?.textureRequirements || 'High quality, web-optimized';
+      
+      return `
+        <div class="warning">
+          <h4>⚠️ Important Quality Guidelines</h4>
+          <ul>
+            <li>Keep polygon count under ${polygonLimit.toLocaleString()} triangles per object for web performance</li>
+            <li>Ensure all objects are properly centered at origin (0,0,0)</li>
+            <li>Remove any hidden or unused objects before export</li>
+            <li>Test your export in Threekit Studio before finalizing</li>
+            <li>Texture requirements: ${textureReqs}</li>
+          </ul>
+        </div>
+        
+        ${clientConfig.setupGuide?.specialInstructions ? `
+          <div class="success">
+            <h4>💡 Special Instructions for Your Project</h4>
+            <p>${clientConfig.setupGuide.specialInstructions}</p>
+          </div>
+        ` : ''}
+      `;
+    }
+
+    function showError(message) {
+      const content = document.getElementById('content');
+      const loading = document.getElementById('loading');
+      
+      loading.classList.add('hidden');
+      content.classList.remove('hidden');
+      
+      content.innerHTML = `
+        <section>
+          <h2>Setup Guide Not Found</h2>
+          <p>${message}</p>
+          <p>It looks like you accessed this page directly. Please use the questionnaire to get your customized setup guide.</p>
+          <a href="threekit-3d-setup-guide.html" class="next-btn">Go to Setup Questionnaire</a>
+        </section>
+      `;
+    }
+
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', loadClientGuide);
+  </script>
+</body>
+</html>

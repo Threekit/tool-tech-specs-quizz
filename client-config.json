@@ -1,0 +1,35 @@
+{
+  "clientId": "atletica-gym",
+  "clientName": "Atletica Gym",
+  "industry": "fitness-equipment",
+  "projectType": "webgl-configurator",
+  "knownInfo": {
+    "3dSoftware": "Autodesk 3ds Max",
+    "exportFormat": "FBX",
+    "assetOrganization": "Separated by component",
+    "materialApproach": "Use existing materials from DCC",
+    "targetPlatform": "WebGL"
+  },
+  "setupGuide": {
+    "focus": "Complex equipment configurator with mechanical parts",
+    "keyRequirements": [
+      "Each piece of equipment (barbells, plates, machines) as separate objects",
+      "Consistent naming: 'EquipmentType_PartName_Material' (e.g., 'Barbell_Handle_Steel')",
+      "All moving parts separate for proper animation",
+      "Realistic material names matching product catalog"
+    ],
+    "exportSettings": {
+      "format": "FBX",
+      "units": "Centimeters",
+      "scaleFactor": 1.0,
+      "includeMaterials": true,
+      "includeTextures": true,
+      "polygonLimit": 50000
+    },
+    "materialGuidance": {
+      "useStandardMaterials": true,
+      "namingConvention": "MaterialType_Finish (e.g., Steel_Matte, Rubber_Textured)",
+      "textureRequirements": "High quality, web-optimized"
+    }
+  }
+}

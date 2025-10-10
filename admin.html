@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Threekit Admin - Client Guide Builder</title>
+  <style>
+    :root { --ink:#0f172a; --muted:#475569; --bg:#ffffff; --line:#e2e8f0; --accent:#2563eb; --green:#22c55e; --orange:#f59e0b; --red:#ef4444; }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;font-family:ui-sans-serif,system-ui,Roboto,Helvetica,Arial;background:var(--bg);color:var(--ink);line-height:1.6}
+    header{padding:16px 24px;border-bottom:1px solid var(--line);background:#fff;position:sticky;top:0;z-index:10}
+    h1{font-size:28px;margin:0;color:var(--accent)}
+    main{max-width:1200px;margin:32px auto;padding:0 20px;}
+    .admin-section{background:#fff;border:1px solid var(--line);border-radius:16px;padding:32px;margin-bottom:24px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+    h2{margin-top:0;font-size:24px;color:var(--ink)}
+    h3{font-size:20px;color:var(--ink);margin-top:24px}
+    .form-group{margin-bottom:20px}
+    label{display:block;margin-bottom:8px;font-weight:500;color:var(--ink)}
+    input,select,textarea{width:100%;padding:12px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+    textarea{height:100px;resize:vertical}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    .checkbox-group{display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:12px;margin-top:8px}
+    .checkbox-item{display:flex;align-items:center;gap:8px}
+    .checkbox-item input[type="checkbox"]{width:auto}
+    .btn{display:inline-block;padding:12px 24px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;text-decoration:none;font-weight:500;margin-right:12px;margin-bottom:12px}
+    .btn:hover{background:#1d4ed8}
+    .btn-secondary{background:var(--muted)}
+    .btn-secondary:hover{background:#374151}
+    .btn-success{background:var(--green)}
+    .btn-success:hover{background:#16a34a}
+    .btn-danger{background:var(--red)}
+    .btn-danger:hover{background:#dc2626}
+    .preview-section{background:#f8fafc;border:1px solid var(--line);border-radius:8px;padding:20px;margin-top:20px}
+    .client-library{background:#f0fdf4;border:1px solid var(--green);border-radius:8px;padding:20px;margin-top:20px}
+    .library-item{background:#fff;border:1px solid var(--line);border-radius:8px;padding:16px;margin:8px 0;cursor:pointer;transition:all 0.2s}
+    .library-item:hover{background:#f8fafc;border-color:var(--accent)}
+    .library-item.selected{background:#eff6ff;border-color:var(--accent)}
+    .hidden{display:none}
+    .success-message{background:#f0fdf4;border:1px solid var(--green);border-radius:8px;padding:16px;margin:16px 0;color:var(--green)}
+    .error-message{background:#fef2f2;border:1px solid var(--red);border-radius:8px;padding:16px;margin:16px 0;color:var(--red)}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🔧 Threekit Admin - Client Guide Builder</h1>
+    <p>Create customized 3D setup guides for your clients</p>
+  </header>
+
+  <main>
+    <!-- Client Information -->
+    <section class="admin-section">
+      <h2>Client Information</h2>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="clientName">Company Name</label>
+          <input type="text" id="clientName" placeholder="e.g., Atletica Gym" />
+        </div>
+        <div class="form-group">
+          <label for="clientId">Client ID (URL identifier)</label>
+          <input type="text" id="clientId" placeholder="e.g., atletica-gym" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="industry">Industry</label>
+          <select id="industry">
+            <option value="">Select Industry</option>
+            <option value="fitness-equipment">Fitness Equipment</option>
+            <option value="furniture">Furniture</option>
+            <option value="automotive">Automotive</option>
+            <option value="jewelry">Jewelry</option>
+            <option value="electronics">Electronics</option>
+            <option value="fashion">Fashion</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="projectType">Project Type</label>
+          <select id="projectType">
+            <option value="">Select Project Type</option>
+            <option value="webgl-configurator">WebGL Configurator</option>
+            <option value="webgl-viewer">WebGL Viewer</option>
+            <option value="ar-viewer">AR Viewer</option>
+            <option value="vr-experience">VR Experience</option>
+            <option value="mobile-app">Mobile App</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- Technical Setup -->
+    <section class="admin-section">
+      <h2>Technical Setup (What We Know)</h2>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="3dSoftware">3D Software</label>
+          <select id="3dSoftware">
+            <option value="">Select Software</option>
+            <option value="Autodesk 3ds Max">Autodesk 3ds Max</option>
+            <option value="Blender">Blender</option>
+            <option value="Autodesk Maya">Autodesk Maya</option>
+            <option value="Cinema 4D">Cinema 4D</option>
+            <option value="Modo">Modo</option>
+            <option value="Houdini">Houdini</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="exportFormat">Export Format</label>
+          <select id="exportFormat">
+            <option value="">Select Format</option>
+            <option value="FBX">FBX</option>
+            <option value="GLB/GLTF">GLB/GLTF</option>
+            <option value="USDZ">USDZ (iOS AR)</option>
+            <option value="OBJ">OBJ</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="assetOrganization">Asset Organization</label>
+          <select id="assetOrganization">
+            <option value="">Select Organization</option>
+            <option value="Separated by component">Separated by component (recommended)</option>
+            <option value="Separated parts by materials">Separated parts by materials</option>
+            <option value="Single combined meshes">Single combined meshes</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="materialApproach">Material Approach</label>
+          <select id="materialApproach">
+            <option value="">Select Approach</option>
+            <option value="Use existing materials from DCC">Use existing materials from DCC</option>
+            <option value="Create new materials in Threekit">Create new materials in Threekit</option>
+            <option value="Mix of both approaches">Mix of both approaches</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- Project Requirements -->
+    <section class="admin-section">
+      <h2>Project Requirements</h2>
+      <div class="form-group">
+        <label>Key Requirements (check all that apply)</label>
+        <div class="checkbox-group">
+          <div class="checkbox-item">
+            <input type="checkbox" id="req-configurator" value="Product configurator with multiple options">
+            <label for="req-configurator">Product configurator with multiple options</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="req-materials" value="Material customization">
+            <label for="req-materials">Material customization</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="req-animation" value="Interactive animations">
+            <label for="req-animation">Interactive animations</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="req-mobile" value="Mobile optimization">
+            <label for="req-mobile">Mobile optimization</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="req-ar" value="AR compatibility">
+            <label for="req-ar">AR compatibility</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="req-performance" value="High performance requirements">
+            <label for="req-performance">High performance requirements</label>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="customRequirements">Additional Custom Requirements</label>
+        <textarea id="customRequirements" placeholder="Any specific requirements for this client..."></textarea>
+      </div>
+    </section>
+
+    <!-- Recommendations -->
+    <section class="admin-section">
+      <h2>Our Recommendations</h2>
+      <div class="form-group">
+        <label for="namingConvention">Naming Convention</label>
+        <input type="text" id="namingConvention" placeholder="e.g., EquipmentType_PartName_Material" />
+      </div>
+      <div class="form-group">
+        <label for="polygonLimit">Polygon Limit per Object</label>
+        <input type="number" id="polygonLimit" placeholder="50000" />
+      </div>
+      <div class="form-group">
+        <label for="textureRequirements">Texture Requirements</label>
+        <textarea id="textureRequirements" placeholder="e.g., High quality, web-optimized, 2048x2048 max"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="specialInstructions">Special Instructions</label>
+        <textarea id="specialInstructions" placeholder="Any special instructions or tips for this client..."></textarea>
+      </div>
+    </section>
+
+    <!-- Client Library -->
+    <section class="admin-section">
+      <h2>Client Library</h2>
+      <p>Select from existing similar projects to speed up setup:</p>
+      <div class="client-library">
+        <div class="library-item" onclick="loadFromLibrary('atletica-gym')">
+          <strong>Atletica Gym</strong> - Fitness Equipment Configurator (3ds Max, FBX, Component-based)
+        </div>
+        <div class="library-item" onclick="loadFromLibrary('furniture-retailer')">
+          <strong>Modern Furniture Co</strong> - Furniture Viewer (Blender, GLB, Single objects)
+        </div>
+        <div class="library-item" onclick="loadFromLibrary('jewelry-brand')">
+          <strong>Luxury Jewelry Brand</strong> - Jewelry Configurator (Maya, FBX, Component-based)
+        </div>
+        <div class="library-item" onclick="loadFromLibrary('car-manufacturer')">
+          <strong>Car Manufacturer</strong> - Vehicle Configurator (3ds Max, FBX, Component-based)
+        </div>
+      </div>
+    </section>
+
+    <!-- Actions -->
+    <section class="admin-section">
+      <h2>Actions</h2>
+      <button class="btn btn-success" onclick="generateClientGuide()">Generate Client Guide</button>
+      <button class="btn btn-secondary" onclick="previewGuide()">Preview Guide</button>
+      <button class="btn" onclick="saveToLibrary()">Save to Library</button>
+      <button class="btn btn-danger" onclick="clearForm()">Clear Form</button>
+    </section>
+
+    <!-- Preview -->
+    <section class="admin-section hidden" id="previewSection">
+      <h2>Preview</h2>
+      <div class="preview-section" id="previewContent">
+        <!-- Preview content will be generated here -->
+      </div>
+    </section>
+
+    <!-- Success Message -->
+    <div class="success-message hidden" id="successMessage">
+      Client guide generated successfully! <a href="#" id="clientLink" target="_blank">View Client Guide</a>
+    </div>
+  </main>
+
+  <script>
+    // Load from library
+    function loadFromLibrary(clientId) {
+      // Remove previous selection
+      document.querySelectorAll('.library-item').forEach(item => {
+        item.classList.remove('selected');
+      });
+      
+      // Add selection to clicked item
+      event.target.classList.add('selected');
+      
+      // Load the client data
+      fetch(`client-config-${clientId}.json`)
+        .then(response => response.json())
+        .then(config => {
+          populateForm(config);
+        })
+        .catch(error => {
+          console.log('Library item not found, using template');
+          // Use a template based on the client type
+          if (clientId === 'atletica-gym') {
+            populateForm({
+              clientName: 'Atletica Gym',
+              clientId: 'atletica-gym',
+              industry: 'fitness-equipment',
+              projectType: 'webgl-configurator',
+              knownInfo: {
+                '3dSoftware': 'Autodesk 3ds Max',
+                'exportFormat': 'FBX',
+                'assetOrganization': 'Separated by component',
+                'materialApproach': 'Use existing materials from DCC',
+                'targetPlatform': 'WebGL'
+              }
+            });
+          }
+        });
+    }
+
+    function populateForm(config) {
+      document.getElementById('clientName').value = config.clientName || '';
+      document.getElementById('clientId').value = config.clientId || '';
+      document.getElementById('industry').value = config.industry || '';
+      document.getElementById('projectType').value = config.projectType || '';
+      
+      if (config.knownInfo) {
+        document.getElementById('3dSoftware').value = config.knownInfo['3dSoftware'] || '';
+        document.getElementById('exportFormat').value = config.knownInfo['exportFormat'] || '';
+        document.getElementById('assetOrganization').value = config.knownInfo['assetOrganization'] || '';
+        document.getElementById('materialApproach').value = config.knownInfo['materialApproach'] || '';
+      }
+    }
+
+    function generateClientGuide() {
+      const formData = collectFormData();
+      
+      if (!formData.clientName || !formData.clientId) {
+        alert('Please fill in Client Name and Client ID');
+        return;
+      }
+
+      // Generate the client configuration
+      const clientConfig = {
+        clientId: formData.clientId,
+        clientName: formData.clientName,
+        industry: formData.industry,
+        projectType: formData.projectType,
+        knownInfo: {
+          '3dSoftware': formData['3dSoftware'],
+          'exportFormat': formData.exportFormat,
+          'assetOrganization': formData.assetOrganization,
+          'materialApproach': formData.materialApproach,
+          'targetPlatform': 'WebGL'
+        },
+        setupGuide: {
+          focus: `${formData.industry} ${formData.projectType}`,
+          keyRequirements: formData.requirements,
+          exportSettings: {
+            format: formData.exportFormat,
+            units: 'Centimeters',
+            scaleFactor: 1.0,
+            includeMaterials: true,
+            includeTextures: true,
+            polygonLimit: parseInt(formData.polygonLimit) || 50000
+          },
+          materialGuidance: {
+            namingConvention: formData.namingConvention,
+            textureRequirements: formData.textureRequirements
+          },
+          specialInstructions: formData.specialInstructions
+        }
+      };
+
+      // Save the configuration
+      saveClientConfig(clientConfig);
+      
+      // Generate the client guide
+      generateClientGuidePage(clientConfig);
+      
+      // Show success message
+      document.getElementById('successMessage').classList.remove('hidden');
+      document.getElementById('clientLink').href = `client-guide.html?client=${formData.clientId}`;
+    }
+
+    function collectFormData() {
+      const requirements = [];
+      document.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
+        requirements.push(checkbox.value);
+      });
+
+      return {
+        clientName: document.getElementById('clientName').value,
+        clientId: document.getElementById('clientId').value,
+        industry: document.getElementById('industry').value,
+        projectType: document.getElementById('projectType').value,
+        '3dSoftware': document.getElementById('3dSoftware').value,
+        exportFormat: document.getElementById('exportFormat').value,
+        assetOrganization: document.getElementById('assetOrganization').value,
+        materialApproach: document.getElementById('materialApproach').value,
+        requirements: requirements,
+        customRequirements: document.getElementById('customRequirements').value,
+        namingConvention: document.getElementById('namingConvention').value,
+        polygonLimit: document.getElementById('polygonLimit').value,
+        textureRequirements: document.getElementById('textureRequirements').value,
+        specialInstructions: document.getElementById('specialInstructions').value
+      };
+    }
+
+    function saveClientConfig(config) {
+      // In a real implementation, this would save to a backend
+      // For now, we'll create a downloadable JSON file
+      const dataStr = JSON.stringify(config, null, 2);
+      const dataBlob = new Blob([dataStr], {type: 'application/json'});
+      const url = URL.createObjectURL(dataBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `client-config-${config.clientId}.json`;
+      link.click();
+    }
+
+    function generateClientGuidePage(config) {
+      // This would generate the actual client guide page
+      // For now, we'll show a preview
+      previewGuide();
+    }
+
+    function previewGuide() {
+      const formData = collectFormData();
+      const previewContent = document.getElementById('previewContent');
+      
+      previewContent.innerHTML = `
+        <h3>${formData.clientName} - 3D Setup Guide</h3>
+        <p><strong>Industry:</strong> ${formData.industry}</p>
+        <p><strong>Project Type:</strong> ${formData.projectType}</p>
+        <p><strong>3D Software:</strong> ${formData['3dSoftware']}</p>
+        <p><strong>Export Format:</strong> ${formData.exportFormat}</p>
+        <p><strong>Asset Organization:</strong> ${formData.assetOrganization}</p>
+        <p><strong>Requirements:</strong></p>
+        <ul>
+          ${formData.requirements.map(req => `<li>${req}</li>`).join('')}
+        </ul>
+        <p><strong>Naming Convention:</strong> ${formData.namingConvention}</p>
+        <p><strong>Polygon Limit:</strong> ${formData.polygonLimit}</p>
+        <p><strong>Special Instructions:</strong> ${formData.specialInstructions}</p>
+      `;
+      
+      document.getElementById('previewSection').classList.remove('hidden');
+    }
+
+    function saveToLibrary() {
+      const formData = collectFormData();
+      if (!formData.clientName || !formData.clientId) {
+        alert('Please fill in Client Name and Client ID first');
+        return;
+      }
+      alert('Client saved to library! (In a real implementation, this would save to a database)');
+    }
+
+    function clearForm() {
+      document.querySelectorAll('input, select, textarea').forEach(input => {
+        if (input.type === 'checkbox') {
+          input.checked = false;
+        } else {
+          input.value = '';
+        }
+      });
+      document.querySelectorAll('.library-item').forEach(item => {
+        item.classList.remove('selected');
+      });
+      document.getElementById('previewSection').classList.add('hidden');
+      document.getElementById('successMessage').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>
