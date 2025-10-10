@@ -1,0 +1,41 @@
+apiVersion: getporter.dev/v1
+kind: Application
+metadata:
+  name: threekit-questionnaire
+  namespace: default
+spec:
+  build:
+    context: .
+    dockerfile: Dockerfile
+  image:
+    repository: threekit-questionnaire
+    tag: latest
+  env:
+    - name: NODE_ENV
+      value: production
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 80
+  ingress:
+    enabled: true
+    className: nginx
+    annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    hosts:
+      - host: threekit-questionnaire.yourdomain.com
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: threekit-questionnaire-tls
+        hosts:
+          - threekit-questionnaire.yourdomain.com
