@@ -2553,53 +2553,65 @@
       const companyName = document.getElementById('companyName').value || 'company';
       const filename = `3D_Tech_Spec_${companyName.replace(/\s+/g, '_')}.pdf`;
       
-      // Calculate content dimensions
-      const contentHeight = guideContent.scrollHeight;
-      const contentWidth = guideContent.offsetWidth || 800;
+      // Clone the content for measurement
+      const clone = guideContent.cloneNode(true);
+      clone.style.cssText = 'position: absolute; left: -9999px; width: 800px; max-width: 800px; margin: 0; padding: 20px; background: white;';
+      document.body.appendChild(clone);
       
-      // Convert pixels to points (1 pixel ≈ 0.75 points for standard 96 DPI)
-      const pdfWidth = contentWidth * 0.75;
-      const pdfHeight = contentHeight * 0.75;
-      
-      const options = {
-        margin: 10, // 10mm margins
-        filename: filename,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { 
-          scale: 2, // Higher quality
-          useCORS: true,
-          logging: false,
-          backgroundColor: '#ffffff'
-        },
-        jsPDF: { 
-          unit: 'pt', 
-          format: [pdfWidth, pdfHeight], // Custom size to fit all content
-          orientation: 'portrait',
-          compress: true
-        },
-        pagebreak: { mode: 'avoid-all' } // Try to keep everything on one page
-      };
-      
-      // Show loading message
-      const loadingMsg = document.createElement('div');
-      loadingMsg.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: white; padding: 20px 40px; border-radius: 8px; z-index: 10000; font-size: 18px;';
-      loadingMsg.textContent = '📄 Generating PDF... Please wait';
-      document.body.appendChild(loadingMsg);
-      
-      // Generate PDF
-      html2pdf()
-        .set(options)
-        .from(guideContent)
-        .save()
-        .then(() => {
-          document.body.removeChild(loadingMsg);
-          console.log('PDF generated successfully');
-        })
-        .catch((error) => {
-          document.body.removeChild(loadingMsg);
-          console.error('Error generating PDF:', error);
-          alert('Error generating PDF. Please try again.');
-        });
+      // Wait for clone to render, then measure
+      setTimeout(() => {
+        const actualHeight = clone.scrollHeight;
+        document.body.removeChild(clone);
+        
+        const options = {
+          margin: [10, 10, 10, 10], // top, right, bottom, left in mm
+          filename: filename,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { 
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            backgroundColor: '#ffffff',
+            width: 800,
+            windowWidth: 800
+          },
+          jsPDF: { 
+            unit: 'mm', 
+            format: 'a4',
+            orientation: 'portrait'
+          },
+          pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+        };
+        
+        // Show loading message
+        const loadingMsg = document.createElement('div');
+        loadingMsg.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: white; padding: 20px 40px; border-radius: 8px; z-index: 10000; font-size: 18px;';
+        loadingMsg.textContent = '📄 Generating PDF... Please wait';
+        document.body.appendChild(loadingMsg);
+        
+        // Prepare content for PDF
+        const originalStyle = guideContent.style.cssText;
+        guideContent.style.cssText = 'width: 100%; max-width: 100%; margin: 0; padding: 0; background: white;';
+        
+        // Generate PDF
+        html2pdf()
+          .set(options)
+          .from(guideContent)
+          .save()
+          .then(() => {
+            guideContent.style.cssText = originalStyle;
+            document.body.removeChild(loadingMsg);
+            console.log('PDF generated successfully');
+          })
+          .catch((error) => {
+            guideContent.style.cssText = originalStyle;
+            if (document.body.contains(loadingMsg)) {
+              document.body.removeChild(loadingMsg);
+            }
+            console.error('Error generating PDF:', error);
+            alert('Error generating PDF. Please try again.');
+          });
+      }, 100);
     }
     
     function printGuideInNewWindow() {
