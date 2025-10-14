@@ -2559,33 +2559,67 @@
       const companyName = document.getElementById('companyName').value || 'company';
       const filename = `3D_Tech_Spec_${companyName.replace(/\s+/g, '_')}.pdf`;
       
-      // Simple options that create one long PDF without page breaks
-      const options = {
-        margin: 0,
-        filename: filename,
-        image: { type: 'jpeg', quality: 1 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'px', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-      };
+      // Create a temporary visible container for PDF generation
+      const tempContainer = document.createElement('div');
+      tempContainer.id = 'pdf-temp-container';
+      tempContainer.style.cssText = `
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 800px;
+        background: white;
+        padding: 20px;
+        visibility: visible;
+        opacity: 1;
+        z-index: -1;
+      `;
       
-      // Generate PDF directly from the guide content
-      html2pdf()
-        .set(options)
-        .from(guideContent)
-        .save()
-        .then(() => {
-          if (document.body.contains(loadingMsg)) {
-            document.body.removeChild(loadingMsg);
-          }
-        })
-        .catch((error) => {
-          console.error('Error generating PDF:', error);
-          if (document.body.contains(loadingMsg)) {
-            document.body.removeChild(loadingMsg);
-          }
-          alert('Error generating PDF. Please try again.');
-        });
+      // Clone the content
+      tempContainer.innerHTML = guideContent.innerHTML;
+      document.body.appendChild(tempContainer);
+      
+      // Wait a moment for render
+      setTimeout(() => {
+        const options = {
+          margin: 10,
+          filename: filename,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { 
+            scale: 2, 
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#ffffff',
+            logging: false
+          },
+          jsPDF: { 
+            unit: 'mm', 
+            format: 'a4', 
+            orientation: 'portrait' 
+          },
+          pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+        };
+        
+        html2pdf()
+          .set(options)
+          .from(tempContainer)
+          .save()
+          .then(() => {
+            document.body.removeChild(tempContainer);
+            if (document.body.contains(loadingMsg)) {
+              document.body.removeChild(loadingMsg);
+            }
+          })
+          .catch((error) => {
+            console.error('Error generating PDF:', error);
+            if (document.body.contains(tempContainer)) {
+              document.body.removeChild(tempContainer);
+            }
+            if (document.body.contains(loadingMsg)) {
+              document.body.removeChild(loadingMsg);
+            }
+            alert('Error generating PDF. Please try again.');
+          });
+      }, 300);
     }
     
     function printGuideInNewWindow() {
