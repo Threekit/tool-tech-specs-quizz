@@ -2559,33 +2559,26 @@
       const companyName = document.getElementById('companyName').value || 'company';
       const filename = `3D_Tech_Spec_${companyName.replace(/\s+/g, '_')}.pdf`;
       
-      // Create a temporary visible container for PDF generation
-      const tempContainer = document.createElement('div');
-      tempContainer.id = 'pdf-temp-container';
-      tempContainer.style.cssText = `
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 800px;
-        background: white;
-        padding: 20px;
-        visibility: visible;
-        opacity: 1;
-        z-index: -1;
-      `;
+      // Use the actual guide content directly (don't clone)
+      // Store original styles
+      const originalStyle = guideContent.style.cssText;
+      const originalMaxWidth = guideContent.style.maxWidth;
       
-      // Clone the content
-      tempContainer.innerHTML = guideContent.innerHTML;
-      document.body.appendChild(tempContainer);
+      // Temporarily style for PDF
+      guideContent.style.maxWidth = '750px';
+      guideContent.style.width = '750px';
+      guideContent.style.margin = '0 auto';
+      guideContent.style.padding = '20px';
+      guideContent.style.background = 'white';
       
-      // Add page break avoidance classes
-      const sections = tempContainer.querySelectorAll('section, .info-box, .workflow-grid > div, .screenshot-slot, h2, h3');
+      // Add page break avoidance
+      const sections = guideContent.querySelectorAll('section, .info-box, .workflow-grid > div, .screenshot-slot, h2, h3');
       sections.forEach(el => {
         el.style.pageBreakInside = 'avoid';
         el.style.breakInside = 'avoid';
       });
       
-      // Wait a moment for render
+      // Wait for styles to apply
       setTimeout(() => {
         const options = {
           margin: [10, 10, 10, 10],
@@ -2612,25 +2605,25 @@
         
         html2pdf()
           .set(options)
-          .from(tempContainer)
+          .from(guideContent)
           .save()
           .then(() => {
-            document.body.removeChild(tempContainer);
+            // Restore original styles
+            guideContent.style.cssText = originalStyle;
             if (document.body.contains(loadingMsg)) {
               document.body.removeChild(loadingMsg);
             }
           })
           .catch((error) => {
             console.error('Error generating PDF:', error);
-            if (document.body.contains(tempContainer)) {
-              document.body.removeChild(tempContainer);
-            }
+            // Restore original styles
+            guideContent.style.cssText = originalStyle;
             if (document.body.contains(loadingMsg)) {
               document.body.removeChild(loadingMsg);
             }
             alert('Error generating PDF. Please try again.');
           });
-      }, 300);
+      }, 500);
     }
     
     function printGuideInNewWindow() {
