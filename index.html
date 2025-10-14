@@ -2564,21 +2564,34 @@
         // Set a fixed width for consistent rendering
         const originalMaxWidth = guideContent.style.maxWidth;
         const originalWidth = guideContent.style.width;
+        const originalOverflow = guideContent.style.overflow;
         guideContent.style.maxWidth = '800px';
         guideContent.style.width = '800px';
+        guideContent.style.overflow = 'visible';
         
         // Wait a moment for reflow
+        await new Promise(resolve => setTimeout(resolve, 200));
+        
+        // Scroll to bottom to ensure everything is rendered
+        guideContent.scrollTop = guideContent.scrollHeight;
+        await new Promise(resolve => setTimeout(resolve, 100));
+        guideContent.scrollTop = 0;
         await new Promise(resolve => setTimeout(resolve, 100));
         
         // Get the actual full height including all children
-        const contentHeight = Math.max(
-          guideContent.scrollHeight,
-          guideContent.offsetHeight,
-          guideContent.clientHeight
-        );
+        let contentHeight = guideContent.scrollHeight;
         
-        // Add buffer for any margins/padding
-        const captureHeight = contentHeight + 100;
+        // Also check all child elements to find the true bottom
+        const children = guideContent.getElementsByTagName('*');
+        for (let child of children) {
+          const childBottom = child.offsetTop + child.offsetHeight;
+          if (childBottom > contentHeight) {
+            contentHeight = childBottom;
+          }
+        }
+        
+        // Add generous buffer for any margins/padding
+        const captureHeight = contentHeight + 200;
         
         // Capture the content as canvas
         const canvas = await html2canvas(guideContent, {
@@ -2595,6 +2608,7 @@
         // Restore original styles
         guideContent.style.maxWidth = originalMaxWidth;
         guideContent.style.width = originalWidth;
+        guideContent.style.overflow = originalOverflow;
         
         // Get canvas dimensions
         const imgWidth = canvas.width;
