@@ -2553,65 +2553,56 @@
       const companyName = document.getElementById('companyName').value || 'company';
       const filename = `3D_Tech_Spec_${companyName.replace(/\s+/g, '_')}.pdf`;
       
-      // Clone the content for measurement
-      const clone = guideContent.cloneNode(true);
-      clone.style.cssText = 'position: absolute; left: -9999px; width: 800px; max-width: 800px; margin: 0; padding: 20px; background: white;';
-      document.body.appendChild(clone);
+      // Show loading message
+      const loadingMsg = document.createElement('div');
+      loadingMsg.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: white; padding: 20px 40px; border-radius: 8px; z-index: 10000; font-size: 18px;';
+      loadingMsg.textContent = '📄 Generating PDF... Please wait';
+      document.body.appendChild(loadingMsg);
       
-      // Wait for clone to render, then measure
-      setTimeout(() => {
-        const actualHeight = clone.scrollHeight;
-        document.body.removeChild(clone);
-        
-        const options = {
-          margin: [10, 10, 10, 10], // top, right, bottom, left in mm
-          filename: filename,
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { 
-            scale: 2,
-            useCORS: true,
-            logging: false,
-            backgroundColor: '#ffffff',
-            width: 800,
-            windowWidth: 800
-          },
-          jsPDF: { 
-            unit: 'mm', 
-            format: 'a4',
-            orientation: 'portrait'
-          },
-          pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-        };
-        
-        // Show loading message
-        const loadingMsg = document.createElement('div');
-        loadingMsg.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: white; padding: 20px 40px; border-radius: 8px; z-index: 10000; font-size: 18px;';
-        loadingMsg.textContent = '📄 Generating PDF... Please wait';
-        document.body.appendChild(loadingMsg);
-        
-        // Prepare content for PDF
-        const originalStyle = guideContent.style.cssText;
-        guideContent.style.cssText = 'width: 100%; max-width: 100%; margin: 0; padding: 0; background: white;';
-        
-        // Generate PDF
-        html2pdf()
-          .set(options)
-          .from(guideContent)
-          .save()
-          .then(() => {
-            guideContent.style.cssText = originalStyle;
+      // Create a wrapper with clean styling
+      const wrapper = document.createElement('div');
+      wrapper.style.cssText = 'position: absolute; left: -9999px; top: 0; width: 750px; padding: 20px; background: white; font-family: Inter, sans-serif;';
+      wrapper.innerHTML = guideContent.innerHTML;
+      document.body.appendChild(wrapper);
+      
+      // Configure options
+      const options = {
+        margin: 15,
+        filename: filename,
+        image: { type: 'jpeg', quality: 0.95 },
+        html2canvas: { 
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          backgroundColor: '#ffffff'
+        },
+        jsPDF: { 
+          unit: 'mm', 
+          format: 'a4',
+          orientation: 'portrait'
+        }
+      };
+      
+      // Generate PDF from the clean wrapper
+      html2pdf()
+        .set(options)
+        .from(wrapper)
+        .save()
+        .then(() => {
+          document.body.removeChild(wrapper);
+          document.body.removeChild(loadingMsg);
+          console.log('PDF generated successfully');
+        })
+        .catch((error) => {
+          if (document.body.contains(wrapper)) {
+            document.body.removeChild(wrapper);
+          }
+          if (document.body.contains(loadingMsg)) {
             document.body.removeChild(loadingMsg);
-            console.log('PDF generated successfully');
-          })
-          .catch((error) => {
-            guideContent.style.cssText = originalStyle;
-            if (document.body.contains(loadingMsg)) {
-              document.body.removeChild(loadingMsg);
-            }
-            console.error('Error generating PDF:', error);
-            alert('Error generating PDF. Please try again.');
-          });
-      }, 100);
+          }
+          console.error('Error generating PDF:', error);
+          alert('Error generating PDF. Please try again.');
+        });
     }
     
     function printGuideInNewWindow() {
