@@ -2570,6 +2570,16 @@
         // Wait a moment for reflow
         await new Promise(resolve => setTimeout(resolve, 100));
         
+        // Get the actual full height including all children
+        const contentHeight = Math.max(
+          guideContent.scrollHeight,
+          guideContent.offsetHeight,
+          guideContent.clientHeight
+        );
+        
+        // Add buffer for any margins/padding
+        const captureHeight = contentHeight + 100;
+        
         // Capture the content as canvas
         const canvas = await html2canvas(guideContent, {
           scale: 2,
@@ -2578,7 +2588,8 @@
           backgroundColor: '#ffffff',
           logging: false,
           width: guideContent.scrollWidth,
-          height: guideContent.scrollHeight
+          height: captureHeight,
+          windowHeight: captureHeight
         });
         
         // Restore original styles
