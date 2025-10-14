@@ -8,7 +8,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
   <header>
@@ -2549,79 +2548,9 @@
         return;
       }
       
-      // Get customer info for filename
-      const companyName = document.getElementById('companyName').value || 'company';
-      const filename = `3D_Tech_Spec_${companyName.replace(/\s+/g, '_')}.pdf`;
-      
-      // Show loading message
-      const loadingMsg = document.createElement('div');
-      loadingMsg.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: white; padding: 20px 40px; border-radius: 8px; z-index: 10000; font-size: 18px;';
-      loadingMsg.textContent = '📄 Generating PDF... Please wait';
-      document.body.appendChild(loadingMsg);
-      
-      // Clone the element with all its styles
-      const clone = guideContent.cloneNode(true);
-      clone.style.cssText = 'width: 750px; max-width: 750px; padding: 20px; background: white; position: absolute; left: 0; top: 0; visibility: visible; opacity: 1;';
-      
-      // Create a temporary container
-      const tempContainer = document.createElement('div');
-      tempContainer.style.cssText = 'position: absolute; left: 0; top: 0; width: 790px; background: white; visibility: hidden; overflow: hidden;';
-      tempContainer.appendChild(clone);
-      document.body.appendChild(tempContainer);
-      
-      // Wait for images to load
-      const images = clone.getElementsByTagName('img');
-      const imagePromises = Array.from(images).map(img => {
-        if (img.complete) return Promise.resolve();
-        return new Promise((resolve) => {
-          img.onload = resolve;
-          img.onerror = resolve;
-          setTimeout(resolve, 3000); // Timeout after 3 seconds
-        });
-      });
-      
-      Promise.all(imagePromises).then(() => {
-        // Give a bit more time for rendering
-        setTimeout(() => {
-          const options = {
-            margin: 15,
-            filename: filename,
-            image: { type: 'jpeg', quality: 0.95 },
-            html2canvas: { 
-              scale: 2,
-              useCORS: true,
-              logging: true,
-              backgroundColor: '#ffffff',
-              allowTaint: true
-            },
-            jsPDF: { 
-              unit: 'mm', 
-              format: 'a4',
-              orientation: 'portrait'
-            }
-          };
-          
-          html2pdf()
-            .set(options)
-            .from(clone)
-            .save()
-            .then(() => {
-              document.body.removeChild(tempContainer);
-              document.body.removeChild(loadingMsg);
-              console.log('PDF generated successfully');
-            })
-            .catch((error) => {
-              if (document.body.contains(tempContainer)) {
-                document.body.removeChild(tempContainer);
-              }
-              if (document.body.contains(loadingMsg)) {
-                document.body.removeChild(loadingMsg);
-              }
-              console.error('Error generating PDF:', error);
-              alert('Error generating PDF. Please try again.');
-            });
-        }, 500);
-      });
+      // Simply trigger the browser's print dialog
+      // The CSS @media print rules will handle the styling
+      window.print();
     }
     
     function printGuideInNewWindow() {
