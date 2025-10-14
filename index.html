@@ -2541,7 +2541,7 @@
       window.scrollTo(0, 0);
     }
 
-    async function printGuide() {
+    function printGuide() {
       const guideContent = document.getElementById('guideContent');
       
       if (!guideContent || guideContent.innerHTML.trim() === '') {
@@ -2552,67 +2552,40 @@
       // Show loading message
       const loadingMsg = document.createElement('div');
       loadingMsg.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.9); color: white; padding: 30px 50px; border-radius: 10px; z-index: 10000; font-size: 20px; font-weight: bold;';
-      loadingMsg.innerHTML = '📄 Generating PDF with clickable links...<br><small style="font-size: 14px; font-weight: normal;">This may take a moment</small>';
+      loadingMsg.innerHTML = '📄 Generating PDF...<br><small style="font-size: 14px; font-weight: normal;">This may take a moment</small>';
       document.body.appendChild(loadingMsg);
       
-      try {
-        // Get company name for filename
-        const companyName = document.getElementById('companyName').value || 'company';
-        const filename = `3D_Tech_Spec_${companyName.replace(/\s+/g, '_')}.pdf`;
-        
-        // Clone the content to style it properly
-        const clone = guideContent.cloneNode(true);
-        clone.style.cssText = 'width: 100%; max-width: 750px; padding: 20px; margin: 0 auto;';
-        
-        // Add page break hints to avoid breaking sections awkwardly
-        const sections = clone.querySelectorAll('section, .info-box, .workflow-grid, .screenshot-slot');
-        sections.forEach(section => {
-          section.style.pageBreakInside = 'avoid';
-          section.style.breakInside = 'avoid';
-        });
-        
-        // Configure html2pdf options for text-based PDF with links
-        const options = {
-          margin: [15, 15, 15, 15],
-          filename: filename,
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { 
-            scale: 2,
-            useCORS: true,
-            logging: false,
-            backgroundColor: '#ffffff'
-          },
-          jsPDF: { 
-            unit: 'mm', 
-            format: 'a4',
-            orientation: 'portrait'
-          },
-          pagebreak: { 
-            mode: ['avoid-all', 'css', 'legacy'],
-            before: '.page-break-before',
-            after: '.page-break-after',
-            avoid: ['section', '.info-box', '.workflow-grid > div', '.screenshot-slot']
+      // Get company name for filename
+      const companyName = document.getElementById('companyName').value || 'company';
+      const filename = `3D_Tech_Spec_${companyName.replace(/\s+/g, '_')}.pdf`;
+      
+      // Simple options that create one long PDF without page breaks
+      const options = {
+        margin: 0,
+        filename: filename,
+        image: { type: 'jpeg', quality: 1 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'px', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+      };
+      
+      // Generate PDF directly from the guide content
+      html2pdf()
+        .set(options)
+        .from(guideContent)
+        .save()
+        .then(() => {
+          if (document.body.contains(loadingMsg)) {
+            document.body.removeChild(loadingMsg);
           }
-        };
-        
-        // Generate PDF with text and links
-        await html2pdf()
-          .set(options)
-          .from(clone)
-          .save();
-        
-        // Remove loading message
-        if (document.body.contains(loadingMsg)) {
-          document.body.removeChild(loadingMsg);
-        }
-        
-      } catch (error) {
-        console.error('Error generating PDF:', error);
-        if (document.body.contains(loadingMsg)) {
-          document.body.removeChild(loadingMsg);
-        }
-        alert('Error generating PDF. Please try again.');
-      }
+        })
+        .catch((error) => {
+          console.error('Error generating PDF:', error);
+          if (document.body.contains(loadingMsg)) {
+            document.body.removeChild(loadingMsg);
+          }
+          alert('Error generating PDF. Please try again.');
+        });
     }
     
     function printGuideInNewWindow() {
