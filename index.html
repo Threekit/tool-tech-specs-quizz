@@ -8,8 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
   <header>
@@ -2553,7 +2552,7 @@
       // Show loading message
       const loadingMsg = document.createElement('div');
       loadingMsg.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.9); color: white; padding: 30px 50px; border-radius: 10px; z-index: 10000; font-size: 20px; font-weight: bold;';
-      loadingMsg.innerHTML = '📄 Generating PDF...<br><small style="font-size: 14px; font-weight: normal;">This may take a moment</small>';
+      loadingMsg.innerHTML = '📄 Generating PDF with clickable links...<br><small style="font-size: 14px; font-weight: normal;">This may take a moment</small>';
       document.body.appendChild(loadingMsg);
       
       try {
@@ -2561,108 +2560,51 @@
         const companyName = document.getElementById('companyName').value || 'company';
         const filename = `3D_Tech_Spec_${companyName.replace(/\s+/g, '_')}.pdf`;
         
-        // Set a fixed width for consistent rendering
-        const originalMaxWidth = guideContent.style.maxWidth;
-        const originalWidth = guideContent.style.width;
-        const originalOverflow = guideContent.style.overflow;
-        guideContent.style.maxWidth = '800px';
-        guideContent.style.width = '800px';
-        guideContent.style.overflow = 'visible';
+        // Clone the content to style it properly
+        const clone = guideContent.cloneNode(true);
+        clone.style.cssText = 'width: 100%; max-width: 750px; padding: 20px; margin: 0 auto;';
         
-        // Wait a moment for reflow
-        await new Promise(resolve => setTimeout(resolve, 200));
+        // Add page break hints to avoid breaking sections awkwardly
+        const sections = clone.querySelectorAll('section, .info-box, .workflow-grid, .screenshot-slot');
+        sections.forEach(section => {
+          section.style.pageBreakInside = 'avoid';
+          section.style.breakInside = 'avoid';
+        });
         
-        // Scroll to bottom to ensure everything is rendered
-        guideContent.scrollTop = guideContent.scrollHeight;
-        await new Promise(resolve => setTimeout(resolve, 100));
-        guideContent.scrollTop = 0;
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
-        // Get all possible height measurements
-        const scrollHeight = guideContent.scrollHeight;
-        const offsetHeight = guideContent.offsetHeight;
-        const clientHeight = guideContent.clientHeight;
-        
-        // Check the bounding rectangle
-        const rect = guideContent.getBoundingClientRect();
-        const boundingHeight = rect.height;
-        
-        // Check all child elements to find the true bottom
-        let maxChildBottom = 0;
-        const children = guideContent.getElementsByTagName('*');
-        for (let child of children) {
-          const childRect = child.getBoundingClientRect();
-          const parentRect = guideContent.getBoundingClientRect();
-          const childBottom = childRect.bottom - parentRect.top;
-          if (childBottom > maxChildBottom) {
-            maxChildBottom = childBottom;
+        // Configure html2pdf options for text-based PDF with links
+        const options = {
+          margin: [15, 15, 15, 15],
+          filename: filename,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { 
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            backgroundColor: '#ffffff'
+          },
+          jsPDF: { 
+            unit: 'mm', 
+            format: 'a4',
+            orientation: 'portrait'
+          },
+          pagebreak: { 
+            mode: ['avoid-all', 'css', 'legacy'],
+            before: '.page-break-before',
+            after: '.page-break-after',
+            avoid: ['section', '.info-box', '.workflow-grid > div', '.screenshot-slot']
           }
-        }
+        };
         
-        // Use the maximum of all measurements
-        let contentHeight = Math.max(
-          scrollHeight,
-          offsetHeight,
-          clientHeight,
-          boundingHeight,
-          maxChildBottom
-        );
-        
-        // Add very generous buffer
-        const captureHeight = contentHeight + 500;
-        
-        console.log('Height measurements:', {
-          scrollHeight,
-          offsetHeight,
-          clientHeight,
-          boundingHeight,
-          maxChildBottom,
-          contentHeight,
-          captureHeight
-        });
-        
-        // Capture the content as canvas
-        const canvas = await html2canvas(guideContent, {
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: '#ffffff',
-          logging: false,
-          width: guideContent.scrollWidth,
-          height: captureHeight,
-          windowHeight: captureHeight
-        });
-        
-        // Restore original styles
-        guideContent.style.maxWidth = originalMaxWidth;
-        guideContent.style.width = originalWidth;
-        guideContent.style.overflow = originalOverflow;
-        
-        // Get canvas dimensions
-        const imgWidth = canvas.width;
-        const imgHeight = canvas.height;
-        
-        // Convert to mm (assuming 96 DPI: 1 inch = 25.4mm, 96 pixels = 1 inch)
-        const pdfWidth = (imgWidth * 25.4) / 96;
-        const pdfHeight = (imgHeight * 25.4) / 96;
-        
-        // Create PDF with custom size to fit all content on one page
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF({
-          orientation: pdfWidth > pdfHeight ? 'landscape' : 'portrait',
-          unit: 'mm',
-          format: [pdfWidth, pdfHeight]
-        });
-        
-        // Add the canvas as image to PDF
-        const imgData = canvas.toDataURL('image/jpeg', 0.95);
-        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-        
-        // Save the PDF
-        pdf.save(filename);
+        // Generate PDF with text and links
+        await html2pdf()
+          .set(options)
+          .from(clone)
+          .save();
         
         // Remove loading message
-        document.body.removeChild(loadingMsg);
+        if (document.body.contains(loadingMsg)) {
+          document.body.removeChild(loadingMsg);
+        }
         
       } catch (error) {
         console.error('Error generating PDF:', error);
