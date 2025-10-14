@@ -2578,12 +2578,19 @@
       tempContainer.innerHTML = guideContent.innerHTML;
       document.body.appendChild(tempContainer);
       
+      // Add page break avoidance classes
+      const sections = tempContainer.querySelectorAll('section, .info-box, .workflow-grid > div, .screenshot-slot, h2, h3');
+      sections.forEach(el => {
+        el.style.pageBreakInside = 'avoid';
+        el.style.breakInside = 'avoid';
+      });
+      
       // Wait a moment for render
       setTimeout(() => {
         const options = {
-          margin: 10,
+          margin: [10, 10, 10, 10],
           filename: filename,
-          image: { type: 'jpeg', quality: 0.98 },
+          image: { type: 'jpeg', quality: 0.95 },
           html2canvas: { 
             scale: 2, 
             useCORS: true,
@@ -2594,9 +2601,13 @@
           jsPDF: { 
             unit: 'mm', 
             format: 'a4', 
-            orientation: 'portrait' 
+            orientation: 'portrait',
+            compress: true
           },
-          pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+          pagebreak: { 
+            mode: ['avoid-all'],
+            avoid: ['section', '.info-box', '.workflow-grid > div', '.screenshot-slot', 'h2', 'h3']
+          }
         };
         
         html2pdf()
