@@ -2559,50 +2559,69 @@
       loadingMsg.textContent = '📄 Generating PDF... Please wait';
       document.body.appendChild(loadingMsg);
       
-      // Create a wrapper with clean styling
-      const wrapper = document.createElement('div');
-      wrapper.style.cssText = 'position: absolute; left: -9999px; top: 0; width: 750px; padding: 20px; background: white; font-family: Inter, sans-serif;';
-      wrapper.innerHTML = guideContent.innerHTML;
-      document.body.appendChild(wrapper);
+      // Clone the element with all its styles
+      const clone = guideContent.cloneNode(true);
+      clone.style.cssText = 'width: 750px; max-width: 750px; padding: 20px; background: white; position: absolute; left: 0; top: 0; visibility: visible; opacity: 1;';
       
-      // Configure options
-      const options = {
-        margin: 15,
-        filename: filename,
-        image: { type: 'jpeg', quality: 0.95 },
-        html2canvas: { 
-          scale: 2,
-          useCORS: true,
-          logging: false,
-          backgroundColor: '#ffffff'
-        },
-        jsPDF: { 
-          unit: 'mm', 
-          format: 'a4',
-          orientation: 'portrait'
-        }
-      };
+      // Create a temporary container
+      const tempContainer = document.createElement('div');
+      tempContainer.style.cssText = 'position: absolute; left: 0; top: 0; width: 790px; background: white; visibility: hidden; overflow: hidden;';
+      tempContainer.appendChild(clone);
+      document.body.appendChild(tempContainer);
       
-      // Generate PDF from the clean wrapper
-      html2pdf()
-        .set(options)
-        .from(wrapper)
-        .save()
-        .then(() => {
-          document.body.removeChild(wrapper);
-          document.body.removeChild(loadingMsg);
-          console.log('PDF generated successfully');
-        })
-        .catch((error) => {
-          if (document.body.contains(wrapper)) {
-            document.body.removeChild(wrapper);
-          }
-          if (document.body.contains(loadingMsg)) {
-            document.body.removeChild(loadingMsg);
-          }
-          console.error('Error generating PDF:', error);
-          alert('Error generating PDF. Please try again.');
+      // Wait for images to load
+      const images = clone.getElementsByTagName('img');
+      const imagePromises = Array.from(images).map(img => {
+        if (img.complete) return Promise.resolve();
+        return new Promise((resolve) => {
+          img.onload = resolve;
+          img.onerror = resolve;
+          setTimeout(resolve, 3000); // Timeout after 3 seconds
         });
+      });
+      
+      Promise.all(imagePromises).then(() => {
+        // Give a bit more time for rendering
+        setTimeout(() => {
+          const options = {
+            margin: 15,
+            filename: filename,
+            image: { type: 'jpeg', quality: 0.95 },
+            html2canvas: { 
+              scale: 2,
+              useCORS: true,
+              logging: true,
+              backgroundColor: '#ffffff',
+              allowTaint: true
+            },
+            jsPDF: { 
+              unit: 'mm', 
+              format: 'a4',
+              orientation: 'portrait'
+            }
+          };
+          
+          html2pdf()
+            .set(options)
+            .from(clone)
+            .save()
+            .then(() => {
+              document.body.removeChild(tempContainer);
+              document.body.removeChild(loadingMsg);
+              console.log('PDF generated successfully');
+            })
+            .catch((error) => {
+              if (document.body.contains(tempContainer)) {
+                document.body.removeChild(tempContainer);
+              }
+              if (document.body.contains(loadingMsg)) {
+                document.body.removeChild(loadingMsg);
+              }
+              console.error('Error generating PDF:', error);
+              alert('Error generating PDF. Please try again.');
+            });
+        }, 500);
+      });
     }
     
     function printGuideInNewWindow() {
