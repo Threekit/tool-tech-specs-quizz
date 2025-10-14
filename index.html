@@ -288,6 +288,58 @@
           <option value="very-high">Very High (200k+ triangles)</option>
         </select>
       </div>
+      
+      <!-- Screenshot Upload Section -->
+      <div class="form-group">
+        <div class="checkbox-item">
+          <input type="checkbox" id="includeScreenshots" onchange="toggleScreenshotSection()">
+          <label for="includeScreenshots">📸 I want to share reference images of my 3D model structure</label>
+        </div>
+        <p style="font-size:14px;color:#6b7280;margin-top:8px;">Upload screenshots showing how your models are organized (e.g., Weight Sets, Benches, Accessories as separate objects)</p>
+      </div>
+
+      <div id="screenshotSection" class="form-group" style="display: none;">
+        <label>📸 Reference Images</label>
+        <p style="font-size:14px;color:#6b7280;margin-bottom:1rem;">
+          Paste screenshots showing how your 3D models are organized. Click on the paste area and press Ctrl+V (or Cmd+V on Mac) to paste from clipboard.
+        </p>
+        
+        <div id="screenshotSlots">
+          <!-- Screenshot slot 1 -->
+          <div class="screenshot-slot" id="slot1">
+            <div class="paste-area" id="pasteArea1" tabindex="0">
+              <p style="margin-bottom: 0.5rem;">📋 Click here and press Ctrl+V to paste image</p>
+              <p style="font-size:12px;color:#888;">Or drag & drop an image file</p>
+            </div>
+            <img id="preview1" class="screenshot-preview" style="display:none; max-width: 100%; margin-top: 0.5rem; border-radius: 8px;">
+            <input type="text" id="caption1" placeholder="Add a description (e.g., 'Weight Sets separated by type')" style="display:none; margin-top:0.5rem; width: 100%; padding: 0.5rem; border: 2px solid #e2e8f0; border-radius: 8px;">
+            <button type="button" onclick="removeScreenshot(1)" class="next-btn" style="display:none; margin-top:0.5rem; background:#ef4444; padding: 0.5rem 1rem;" id="removeBtn1">Remove Image</button>
+          </div>
+          
+          <!-- Screenshot slot 2 -->
+          <div class="screenshot-slot" id="slot2" style="display:none; margin-top:1.5rem;">
+            <div class="paste-area" id="pasteArea2" tabindex="0">
+              <p style="margin-bottom: 0.5rem;">📋 Click here and press Ctrl+V to paste another image</p>
+              <p style="font-size:12px;color:#888;">Or drag & drop an image file</p>
+            </div>
+            <img id="preview2" class="screenshot-preview" style="display:none; max-width: 100%; margin-top: 0.5rem; border-radius: 8px;">
+            <input type="text" id="caption2" placeholder="Add a description" style="display:none; margin-top:0.5rem; width: 100%; padding: 0.5rem; border: 2px solid #e2e8f0; border-radius: 8px;">
+            <button type="button" onclick="removeScreenshot(2)" class="next-btn" style="display:none; margin-top:0.5rem; background:#ef4444; padding: 0.5rem 1rem;" id="removeBtn2">Remove Image</button>
+          </div>
+          
+          <!-- Screenshot slot 3 -->
+          <div class="screenshot-slot" id="slot3" style="display:none; margin-top:1.5rem;">
+            <div class="paste-area" id="pasteArea3" tabindex="0">
+              <p style="margin-bottom: 0.5rem;">📋 Click here and press Ctrl+V to paste another image</p>
+              <p style="font-size:12px;color:#888;">Or drag & drop an image file</p>
+            </div>
+            <img id="preview3" class="screenshot-preview" style="display:none; max-width: 100%; margin-top: 0.5rem; border-radius: 8px;">
+            <input type="text" id="caption3" placeholder="Add a description" style="display:none; margin-top:0.5rem; width: 100%; padding: 0.5rem; border: 2px solid #e2e8f0; border-radius: 8px;">
+            <button type="button" onclick="removeScreenshot(3)" class="next-btn" style="display:none; margin-top:0.5rem; background:#ef4444; padding: 0.5rem 1rem;" id="removeBtn3">Remove Image</button>
+          </div>
+        </div>
+      </div>
+      
       <div class="form-row">
         <button class="next-btn" onclick="prevStep(5, 4)" style="background:#6b7280">Previous</button>
         <button class="next-btn" onclick="nextStep(5, 6)">Next</button>
@@ -1685,6 +1737,8 @@
           ${generateWorkflowRecommendations(config)}
           ${generateTrainingRecommendations(config)}
         </div>
+        
+        ${getScreenshotsHTML()}
 
         <div class="info-box success">
           <h3>🔗 Part Reference Node Setup</h3>
@@ -4333,8 +4387,168 @@ Check console for full details.
       // Auto-fill naming convention when industry changes
       document.getElementById('industry').addEventListener('change', autoFillNamingConvention);
       
+      // Initialize screenshot paste functionality
+      setupScreenshotPaste();
+      
       console.log('✅ Initialization complete');
     });
+
+    // ==================== SCREENSHOT HANDLING FUNCTIONS ====================
+    
+    // Store screenshots in memory
+    const screenshots = {};
+
+    // Toggle screenshot section visibility
+    function toggleScreenshotSection() {
+      const checked = document.getElementById('includeScreenshots').checked;
+      document.getElementById('screenshotSection').style.display = checked ? 'block' : 'none';
+    }
+
+    // Setup screenshot paste functionality
+    function setupScreenshotPaste() {
+      for (let i = 1; i <= 3; i++) {
+        const pasteArea = document.getElementById(`pasteArea${i}`);
+        const caption = document.getElementById(`caption${i}`);
+        
+        if (!pasteArea) continue;
+        
+        // Handle paste event
+        pasteArea.addEventListener('paste', function(e) {
+          e.preventDefault();
+          const items = e.clipboardData.items;
+          
+          for (let item of items) {
+            if (item.type.indexOf('image') !== -1) {
+              const blob = item.getAsFile();
+              handleScreenshot(i, blob);
+              break;
+            }
+          }
+        });
+        
+        // Handle drag & drop
+        pasteArea.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          pasteArea.style.background = '#f0f9ff';
+          pasteArea.style.borderColor = '#667EEA';
+        });
+        
+        pasteArea.addEventListener('dragleave', (e) => {
+          pasteArea.style.background = '';
+          pasteArea.style.borderColor = '';
+        });
+        
+        pasteArea.addEventListener('drop', (e) => {
+          e.preventDefault();
+          pasteArea.style.background = '';
+          pasteArea.style.borderColor = '';
+          
+          const file = e.dataTransfer.files[0];
+          if (file && file.type.indexOf('image') !== -1) {
+            handleScreenshot(i, file);
+          }
+        });
+        
+        // Update caption when typing
+        if (caption) {
+          caption.addEventListener('input', function(e) {
+            if (screenshots[i]) {
+              screenshots[i].caption = e.target.value;
+            }
+          });
+        }
+      }
+      
+      console.log('📸 Screenshot paste functionality initialized');
+    }
+
+    // Handle screenshot upload/paste
+    function handleScreenshot(slotNum, file) {
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        const img = document.getElementById(`preview${slotNum}`);
+        const pasteArea = document.getElementById(`pasteArea${slotNum}`);
+        const caption = document.getElementById(`caption${slotNum}`);
+        const removeBtn = document.getElementById(`removeBtn${slotNum}`);
+        
+        // Store the image data
+        screenshots[slotNum] = {
+          data: e.target.result,
+          caption: caption ? caption.value : '',
+          filename: file.name || `screenshot-${slotNum}.png`
+        };
+        
+        // Show preview
+        if (img) {
+          img.src = e.target.result;
+          img.style.display = 'block';
+        }
+        if (pasteArea) pasteArea.style.display = 'none';
+        if (caption) caption.style.display = 'block';
+        if (removeBtn) removeBtn.style.display = 'inline-block';
+        
+        // Show next slot if available
+        if (slotNum < 3) {
+          const nextSlot = document.getElementById(`slot${slotNum + 1}`);
+          if (nextSlot) nextSlot.style.display = 'block';
+        }
+        
+        console.log(`✅ Screenshot ${slotNum} uploaded successfully`);
+      };
+      
+      reader.readAsDataURL(file);
+    }
+
+    // Remove screenshot
+    function removeScreenshot(slotNum) {
+      delete screenshots[slotNum];
+      
+      const img = document.getElementById(`preview${slotNum}`);
+      const pasteArea = document.getElementById(`pasteArea${slotNum}`);
+      const caption = document.getElementById(`caption${slotNum}`);
+      const removeBtn = document.getElementById(`removeBtn${slotNum}`);
+      
+      if (img) {
+        img.style.display = 'none';
+        img.src = '';
+      }
+      if (pasteArea) pasteArea.style.display = 'block';
+      if (caption) {
+        caption.style.display = 'none';
+        caption.value = '';
+      }
+      if (removeBtn) removeBtn.style.display = 'none';
+      
+      console.log(`🗑️ Screenshot ${slotNum} removed`);
+    }
+
+    // Get screenshots for inclusion in documentation
+    function getScreenshotsHTML() {
+      if (Object.keys(screenshots).length === 0) {
+        return '';
+      }
+      
+      let html = '<div style="margin-top: 2rem; padding: 1.5rem; background: #f8fafc; border-radius: 12px; border: 2px solid #e2e8f0;">';
+      html += '<h3 style="color: #1e293b; margin-bottom: 1rem;">📸 Reference Images</h3>';
+      html += '<p style="color: #64748b; margin-bottom: 1rem;">Screenshots provided by the client showing their 3D model organization:</p>';
+      
+      for (let i = 1; i <= 3; i++) {
+        if (screenshots[i]) {
+          html += `<div style="margin-bottom: 1.5rem;">`;
+          html += `<img src="${screenshots[i].data}" style="max-width: 100%; border-radius: 8px; border: 2px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" alt="Reference Screenshot ${i}">`;
+          if (screenshots[i].caption) {
+            html += `<p style="margin-top: 0.5rem; font-style: italic; color: #64748b;">${screenshots[i].caption}</p>`;
+          }
+          html += `</div>`;
+        }
+      }
+      
+      html += '</div>';
+      return html;
+    }
+    
+    // ==================== END SCREENSHOT HANDLING ====================
   </script>
 </body>
 </html>
