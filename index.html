@@ -799,7 +799,9 @@
         contactEmail: document.getElementById('contactEmail').value,
         additionalNotes: document.getElementById('additionalNotes').value,
         trainingModules: trainingModules,
-        configurator: configurator ? configurator.value : ''
+        configurator: configurator ? configurator.value : '',
+        screenshots: screenshots, // Save screenshots with customer data
+        includeScreenshots: document.getElementById('includeScreenshots').checked
       };
     }
 
@@ -4133,18 +4135,35 @@ Check console for full details.
         return;
       }
       
-      customerList.innerHTML = filteredCustomers.map(customer => `
-        <div class="customer-item" onclick="selectCustomer('${customer.id}')" data-customer-id="${customer.id}">
+      // Sort by date (most recent first)
+      const sortedCustomers = [...filteredCustomers].sort((a, b) => 
+        new Date(b.submissionDate) - new Date(a.submissionDate)
+      );
+      
+      customerList.innerHTML = sortedCustomers.map((customer, index) => {
+        const hasScreenshots = customer.screenshots && Object.keys(customer.screenshots).length > 0;
+        const screenshotCount = hasScreenshots ? Object.keys(customer.screenshots).length : 0;
+        const isRecent = index === 0; // First item is most recent
+        
+        return `
+        <div class="customer-item ${isRecent ? 'recent-customer' : ''}" onclick="selectCustomer('${customer.id}')" data-customer-id="${customer.id}" style="${isRecent ? 'border-left: 4px solid #00D4AA; background: #f0fdf4;' : ''}">
           <div class="customer-info">
-            <h4>${customer.companyName}</h4>
+            <h4>
+              ${customer.companyName}
+              ${isRecent ? '<span style="background: #00D4AA; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; margin-left: 0.5rem; font-weight: normal;">NEW</span>' : ''}
+              ${hasScreenshots ? `<span style="color: #667EEA; margin-left: 0.5rem;" title="${screenshotCount} screenshot(s) included">📸 ${screenshotCount}</span>` : ''}
+            </h4>
             <p>${customer.industry} • ${customer.clientWebsite}</p>
             <p style="margin-top: 0.25rem; font-size: 0.75rem; color: var(--gray-500);">${customer.projectDescription}</p>
           </div>
           <div class="customer-date">
             ${new Date(customer.submissionDate).toLocaleDateString()}
+            <br>
+            <span style="font-size: 0.65rem; color: #9ca3af;">${new Date(customer.submissionDate).toLocaleTimeString()}</span>
           </div>
         </div>
-      `).join('');
+      `;
+      }).join('');
     }
 
     function selectCustomer(customerId) {
@@ -4270,6 +4289,49 @@ Check console for full details.
           const checkbox = document.querySelector(`input[value="${req}"]`);
           if (checkbox) checkbox.checked = true;
         });
+      }
+      
+      // Load screenshots
+      if (customer.screenshots && Object.keys(customer.screenshots).length > 0) {
+        // Clear current screenshots
+        Object.keys(screenshots).forEach(key => delete screenshots[key]);
+        
+        // Restore saved screenshots
+        Object.assign(screenshots, customer.screenshots);
+        
+        // Check the include screenshots checkbox
+        if (customer.includeScreenshots) {
+          document.getElementById('includeScreenshots').checked = true;
+          toggleScreenshotSection();
+        }
+        
+        // Restore screenshot previews
+        for (let i = 1; i <= 3; i++) {
+          if (screenshots[i]) {
+            const img = document.getElementById(`preview${i}`);
+            const pasteArea = document.getElementById(`pasteArea${i}`);
+            const caption = document.getElementById(`caption${i}`);
+            const removeBtn = document.getElementById(`removeBtn${i}`);
+            
+            if (img && screenshots[i].data) {
+              img.src = screenshots[i].data;
+              img.style.display = 'block';
+            }
+            if (pasteArea) pasteArea.style.display = 'none';
+            if (caption) {
+              caption.value = screenshots[i].caption || '';
+              caption.style.display = 'block';
+            }
+            if (removeBtn) removeBtn.style.display = 'inline-block';
+            
+            // Show next slot if available
+            if (i < 3 && document.getElementById(`slot${i + 1}`)) {
+              document.getElementById(`slot${i + 1}`).style.display = 'block';
+            }
+          }
+        }
+        
+        console.log('📸 Screenshots restored from customer data');
       }
       
       // Ensure we're on Step 1 and hide all other steps

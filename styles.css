@@ -498,6 +498,18 @@ button,
   margin-top: var(--space-xs);
 }
 
+.customer-item.selected {
+  background: #e0f2fe !important;
+  border-left-color: #0284c7 !important;
+  border-left-width: 4px !important;
+  border-left-style: solid !important;
+}
+
+.customer-item.recent-customer {
+  border-left: 4px solid #00D4AA;
+  background: #f0fdf4;
+}
+
 /* Guide Content */
 .guide-content {
   max-width: 1400px;
