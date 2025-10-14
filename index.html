@@ -2578,20 +2578,48 @@
         guideContent.scrollTop = 0;
         await new Promise(resolve => setTimeout(resolve, 100));
         
-        // Get the actual full height including all children
-        let contentHeight = guideContent.scrollHeight;
+        // Get all possible height measurements
+        const scrollHeight = guideContent.scrollHeight;
+        const offsetHeight = guideContent.offsetHeight;
+        const clientHeight = guideContent.clientHeight;
         
-        // Also check all child elements to find the true bottom
+        // Check the bounding rectangle
+        const rect = guideContent.getBoundingClientRect();
+        const boundingHeight = rect.height;
+        
+        // Check all child elements to find the true bottom
+        let maxChildBottom = 0;
         const children = guideContent.getElementsByTagName('*');
         for (let child of children) {
-          const childBottom = child.offsetTop + child.offsetHeight;
-          if (childBottom > contentHeight) {
-            contentHeight = childBottom;
+          const childRect = child.getBoundingClientRect();
+          const parentRect = guideContent.getBoundingClientRect();
+          const childBottom = childRect.bottom - parentRect.top;
+          if (childBottom > maxChildBottom) {
+            maxChildBottom = childBottom;
           }
         }
         
-        // Add generous buffer for any margins/padding
-        const captureHeight = contentHeight + 200;
+        // Use the maximum of all measurements
+        let contentHeight = Math.max(
+          scrollHeight,
+          offsetHeight,
+          clientHeight,
+          boundingHeight,
+          maxChildBottom
+        );
+        
+        // Add very generous buffer
+        const captureHeight = contentHeight + 500;
+        
+        console.log('Height measurements:', {
+          scrollHeight,
+          offsetHeight,
+          clientHeight,
+          boundingHeight,
+          maxChildBottom,
+          contentHeight,
+          captureHeight
+        });
         
         // Capture the content as canvas
         const canvas = await html2canvas(guideContent, {
