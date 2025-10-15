@@ -33,7 +33,8 @@
       <h2>🏢 Company Information</h2>
       <div class="form-group">
         <label for="clientWebsite">Company Website *</label>
-        <input type="url" id="clientWebsite" placeholder="https://www.yourcompany.com" required onblur="analyzeWebsite()" />
+        <input type="url" id="clientWebsite" placeholder="https://www.yourcompany.com" required />
+        <button type="button" onclick="analyzeWebsite()" class="next-btn" style="background:#667EEA; padding: 0.5rem 1rem; font-size: 0.875rem; margin-top: 0.5rem;">🔍 Analyze Website (Optional)</button>
         <div id="websiteAnalysis" class="info-box info" style="display: none; margin-top: 1rem;">
           <h4>🔍 Website Analysis</h4>
           <div id="analysisContent"></div>
@@ -41,8 +42,9 @@
       </div>
       <div class="form-group">
         <label for="existingConfig">Existing 3D Configuration Link (Optional)</label>
-        <input type="url" id="existingConfig" placeholder="https://yourcompany.com/product-configurator" onblur="analyzeExistingConfig()" />
+        <input type="url" id="existingConfig" placeholder="https://yourcompany.com/product-configurator" />
         <p style="font-size:14px;color:#6b7280;margin-top:4px;">Paste a link to your current 3D configurator to help us understand your existing setup</p>
+        <button type="button" onclick="analyzeExistingConfig()" class="next-btn" style="background:#667EEA; padding: 0.5rem 1rem; font-size: 0.875rem; margin-top: 0.5rem;">🔧 Analyze Configuration (Optional)</button>
         <div id="configAnalysis" class="info-box info" style="display: none; margin-top: 1rem;">
           <h4>🔧 Configuration Analysis</h4>
           <div id="configAnalysisContent"></div>
