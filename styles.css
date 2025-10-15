@@ -503,6 +503,19 @@ button,
   border-left-color: #0284c7 !important;
   border-left-width: 4px !important;
   border-left-style: solid !important;
+  position: relative;
+}
+
+/* Add a visual indicator for selected items */
+.customer-item.selected::before {
+  content: '✓';
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #0284c7;
+  font-size: 1.5rem;
+  font-weight: bold;
 }
 
 .customer-item.recent-customer {

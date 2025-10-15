@@ -4146,7 +4146,7 @@ Check console for full details.
         const isRecent = index === 0; // First item is most recent
         
         return `
-        <div class="customer-item ${isRecent ? 'recent-customer' : ''}" onclick="selectCustomer('${customer.id}')" data-customer-id="${customer.id}" style="${isRecent ? 'border-left: 4px solid #00D4AA; background: #f0fdf4;' : ''}">
+        <div class="customer-item ${isRecent ? 'recent-customer' : ''}" onclick="selectCustomer('${customer.id}')" data-customer-id="${customer.id}">
           <div class="customer-info">
             <h4>
               ${customer.companyName}
@@ -4463,7 +4463,19 @@ Check console for full details.
     // Toggle screenshot section visibility
     function toggleScreenshotSection() {
       const checked = document.getElementById('includeScreenshots').checked;
-      document.getElementById('screenshotSection').style.display = checked ? 'block' : 'none';
+      const section = document.getElementById('screenshotSection');
+      section.style.display = checked ? 'block' : 'none';
+      
+      // Focus on first paste area when section is opened
+      if (checked) {
+        setTimeout(() => {
+          const firstPasteArea = document.getElementById('pasteArea1');
+          if (firstPasteArea) {
+            firstPasteArea.focus();
+            console.log('📸 Screenshot section opened and first paste area focused');
+          }
+        }, 100);
+      }
     }
 
     // Setup screenshot paste functionality
