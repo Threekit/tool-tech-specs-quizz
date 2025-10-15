@@ -2341,18 +2341,69 @@
             <p style="margin-bottom: 1rem; color: #92400e;">Since you're using V-Ray, follow these specific guidelines for optimal Threekit integration:</p>
             
             <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 1rem; margin-bottom: 1rem;">
-              <h5 style="margin-top: 0; color: #2D3748;">V-Ray Material Setup</h5>
+              <h5 style="margin-top: 0; color: #2D3748;">🎨 V-Ray Material Setup</h5>
+              <p style="margin-bottom: 0.5rem;"><strong>Material Organization:</strong></p>
               <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                <li>Divide model into separate geometry elements with dedicated materials</li>
+                <li>Example: <strong>upper</strong>, <strong>sole</strong>, and <strong>laces</strong> should be distinct objects with individual V-Ray materials</li>
+                <li>This enables rendering parts individually and recombining in the configurator</li>
+                <li>Keep <strong>one material per part</strong> for flexible swapping and recoloring</li>
+              </ul>
+              <p style="margin-top: 1rem; margin-bottom: 0.5rem;"><strong>Material Import Process:</strong></p>
+              <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                <li>Keep all materials in a dedicated scene on separate objects</li>
+                <li>Import into Threekit as individual V-Ray materials (as zip file or individually)</li>
                 <li>Use V-Ray materials (VRayMtl) for best compatibility</li>
                 <li>Set up proper PBR workflow with Diffuse, Roughness, and Metallic maps</li>
-                <li>Avoid complex V-Ray material nodes that may not export correctly</li>
               </ul>
             </div>
             
             <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 1rem; margin-bottom: 1rem;">
-              <h5 style="margin-top: 0; color: #2D3748;">V-Ray Lighting Setup</h5>
-              <p style="margin: 0.5rem 0;">${getLightingGuidance(lightingSetup)}</p>
+              <h5 style="margin-top: 0; color: #2D3748;">🏷️ Naming Conventions & Queries</h5>
+              <p style="margin-bottom: 0.5rem;"><strong>Critical:</strong> Proper naming for objects, materials, cameras, and lights</p>
+              <p style="margin-bottom: 0.5rem;">Use consistent naming to enable dynamic part recognition with Queries:</p>
               <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                <li><strong>Wildcards:</strong> "?" for single character, "*" for multiple characters</li>
+                <li><strong>Examples:</strong> Leg_Left, Leg_*, Leg_Le??</li>
+                <li>Text search ignores case</li>
+              </ul>
+            </div>
+            
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 1rem; margin-bottom: 1rem;">
+              <h5 style="margin-top: 0; color: #2D3748;">📷 Camera & Animation Setup</h5>
+              <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                <li><strong>Model Positioning:</strong> Center the model for turntable animations to prevent cropping</li>
+                <li><strong>Camera Views:</strong> Each preset view needs a dedicated camera (no camera animations)</li>
+                <li><strong>Major Changes:</strong> Prepare dedicated 3ds Max scenes for significantly different camera views</li>
+                <li><strong>Visibility/Position:</strong> Use rules to hide/unhide elements instead of animating them</li>
+                <li><strong>Light Control:</strong> Use inclusions/exclusions triggered by configurator rules</li>
+              </ul>
+            </div>
+            
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 1rem; margin-bottom: 1rem;">
+              <h5 style="margin-top: 0; color: #2D3748;">🔧 Exposing Material Parameters</h5>
+              <p style="margin-bottom: 0.5rem;"><strong>Make your configurators efficient by exposing material elements:</strong></p>
+              <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                <li>Add prefix <code style="background: #f1f5f9; padding: 2px 6px; border-radius: 3px;">TK_</code> to texture or material nodes you want to expose</li>
+                <li>Example: <code style="background: #f1f5f9; padding: 2px 6px; border-radius: 3px;">TK_BaseColor</code></li>
+                <li><strong>Supported Nodes:</strong> VrayUserColor, VrayUserInteger, VrayUserScalar</li>
+                <li>Exposed nodes appear as parameters in Threekit after import</li>
+                <li><strong>Use Case:</strong> Swap colors or materials parametrically during configuration</li>
+              </ul>
+              <p style="margin-top: 1rem; margin-bottom: 0.5rem;"><strong>Controllable Features:</strong></p>
+              <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                <li>V-Ray Displacement and Subdivision</li>
+                <li>V-Ray Material Wrapper</li>
+                <li>V-Ray Rounded Corners</li>
+              </ul>
+            </div>
+            
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 1rem; margin-bottom: 1rem;">
+              <h5 style="margin-top: 0; color: #2D3748;">⚙️ V-Ray Settings & Compatibility</h5>
+              <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                <li><strong>Version:</strong> V-Ray 6.2 is currently the highest supported version</li>
+                <li><strong>Not Supported:</strong> GPU rendering and Progressive rendering</li>
+                <li><strong>Lighting:</strong> ${getLightingGuidance(lightingSetup)}</li>
                 <li>Use V-Ray lights for consistent lighting</li>
                 <li>Set up HDR environment maps for realistic reflections</li>
                 <li>Configure V-Ray render settings for optimal export</li>
