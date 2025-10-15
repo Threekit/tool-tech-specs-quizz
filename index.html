@@ -4346,6 +4346,10 @@ Check console for full details.
             const caption = document.getElementById(`caption${i}`);
             const removeBtn = document.getElementById(`removeBtn${i}`);
             
+            // Show this slot first
+            const slot = document.getElementById(`slot${i}`);
+            if (slot) slot.style.display = 'block';
+            
             if (img && screenshots[i].data) {
               img.src = screenshots[i].data;
               img.style.display = 'block';
@@ -4357,9 +4361,10 @@ Check console for full details.
             }
             if (removeBtn) removeBtn.style.display = 'inline-block';
             
-            // Show next slot if available
-            if (i < 3 && document.getElementById(`slot${i + 1}`)) {
-              document.getElementById(`slot${i + 1}`).style.display = 'block';
+            // Show next empty slot if available
+            if (i < 6 && !screenshots[i + 1]) {
+              const nextSlot = document.getElementById(`slot${i + 1}`);
+              if (nextSlot) nextSlot.style.display = 'block';
             }
           }
         }
