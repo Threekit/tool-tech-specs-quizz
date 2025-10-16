@@ -603,6 +603,7 @@
         <!-- Generated guide content will appear here -->
       </div>
       <div class="form-row">
+        <button class="next-btn" onclick="updateCurrentGuide()" style="background:#00D4AA">🔄 Update Guide</button>
         <button class="next-btn print-visible" onclick="printGuide()" style="background:#22c55e">📄 Export to PDF</button>
         <button class="next-btn" onclick="exportAsHTML()" style="background:#3b82f6">🌐 Export as HTML</button>
         <button class="next-btn" onclick="downloadConfig()" style="background:#2563eb">📊 Download Data (CSV + JSON)</button>
@@ -784,6 +785,39 @@
       
       // Show results
       showResults(clientConfig);
+    }
+
+    function updateCurrentGuide() {
+      console.log('🔄 Update Current Guide clicked');
+      
+      // Collect all form data (using current values)
+      const formData = collectFormData();
+      
+      // Update customer in database
+      saveCustomerToDatabase(formData);
+      
+      // Generate client configuration
+      const clientConfig = generateClientConfig(formData);
+      
+      // Regenerate guide content in place
+      const guideContent = document.getElementById('guideContent');
+      guideContent.innerHTML = generateGuideHTML(clientConfig);
+      
+      // Scroll to top of guide
+      guideContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      
+      console.log('✅ Guide updated successfully');
+      
+      // Show a brief confirmation message
+      const resultsTitle = document.querySelector('#results-section h2');
+      const originalTitle = resultsTitle.textContent;
+      resultsTitle.textContent = '✅ Guide Updated Successfully!';
+      resultsTitle.style.color = '#00D4AA';
+      
+      setTimeout(() => {
+        resultsTitle.textContent = originalTitle;
+        resultsTitle.style.color = '';
+      }, 2000);
     }
 
     function collectFormData() {
