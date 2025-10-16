@@ -4750,30 +4750,40 @@ Check console for full details.
     function showNextImageSlot() {
       console.log('🔍 Looking for next hidden slot...');
       
-      for (let i = 2; i <= 12; i++) {
+      // Find the highest visible slot number
+      let highestVisible = 1;
+      for (let i = 1; i <= 12; i++) {
         const slot = document.getElementById(`slot${i}`);
-        const computedDisplay = slot ? window.getComputedStyle(slot).display : 'not found';
-        
-        if (slot && computedDisplay === 'none') {
-          slot.style.display = 'block';
+        if (slot && window.getComputedStyle(slot).display !== 'none') {
+          highestVisible = i;
+        }
+      }
+      
+      console.log(`Highest visible slot: ${highestVisible}`);
+      
+      // Show the next slot after the highest visible one
+      if (highestVisible < 12) {
+        const nextSlot = document.getElementById(`slot${highestVisible + 1}`);
+        if (nextSlot) {
+          nextSlot.style.display = 'block';
           
           // Focus on the newly shown paste area
-          const pasteArea = document.getElementById(`pasteArea${i}`);
+          const pasteArea = document.getElementById(`pasteArea${highestVisible + 1}`);
           if (pasteArea) {
             setTimeout(() => pasteArea.focus(), 100);
           }
           
           // Hide button if we've shown all 12 slots
-          if (i === 12) {
+          if (highestVisible + 1 === 12) {
             document.getElementById('addMoreImagesBtn').style.display = 'none';
           }
           
-          console.log(`✅ Showing slot ${i}`);
+          console.log(`✅ Showing slot ${highestVisible + 1}`);
           return;
         }
       }
       
-      // All slots already visible - hide the button
+      // All 12 slots already visible - hide the button
       document.getElementById('addMoreImagesBtn').style.display = 'none';
       console.log('⚠️ All 12 slots already visible, hiding button');
     }
