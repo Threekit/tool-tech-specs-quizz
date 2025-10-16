@@ -4681,9 +4681,13 @@ Check console for full details.
     
     // Show next available image slot
     function showNextImageSlot() {
+      console.log('🔍 Looking for next hidden slot...');
+      
       for (let i = 2; i <= 6; i++) {
         const slot = document.getElementById(`slot${i}`);
-        if (slot && slot.style.display === 'none') {
+        console.log(`Checking slot${i}:`, slot ? window.getComputedStyle(slot).display : 'not found');
+        
+        if (slot && window.getComputedStyle(slot).display === 'none') {
           slot.style.display = 'block';
           
           // Focus on the newly shown paste area
@@ -4697,10 +4701,12 @@ Check console for full details.
             document.getElementById('addMoreImagesBtn').style.display = 'none';
           }
           
-          console.log(`📸 Showing slot ${i}`);
+          console.log(`✅ Showing slot ${i}`);
           return;
         }
       }
+      
+      console.log('⚠️ No more hidden slots available');
     }
 
     // Setup screenshot paste functionality
