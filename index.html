@@ -374,6 +374,11 @@
             <button type="button" onclick="removeScreenshot(6)" class="next-btn" style="display:none; margin-top:0.5rem; background:#ef4444; padding: 0.5rem 1rem;" id="removeBtn6">Remove Image</button>
           </div>
         </div>
+        
+        <!-- Add More Images Button -->
+        <button type="button" id="addMoreImagesBtn" onclick="showNextImageSlot()" class="next-btn" style="background:#667EEA; margin-top: 1rem; display: none;">
+          ➕ Add More Images
+        </button>
       </div>
       
       <div class="form-row">
@@ -4654,10 +4659,14 @@ Check console for full details.
     function toggleScreenshotSection() {
       const checked = document.getElementById('includeScreenshots').checked;
       const section = document.getElementById('screenshotSection');
+      const addMoreBtn = document.getElementById('addMoreImagesBtn');
+      
       section.style.display = checked ? 'block' : 'none';
       
-      // Focus on first paste area when section is opened
+      // Show "Add More Images" button when section is opened
       if (checked) {
+        addMoreBtn.style.display = 'block';
+        
         setTimeout(() => {
           const firstPasteArea = document.getElementById('pasteArea1');
           if (firstPasteArea) {
@@ -4665,6 +4674,32 @@ Check console for full details.
             console.log('📸 Screenshot section opened and first paste area focused');
           }
         }, 100);
+      } else {
+        addMoreBtn.style.display = 'none';
+      }
+    }
+    
+    // Show next available image slot
+    function showNextImageSlot() {
+      for (let i = 2; i <= 6; i++) {
+        const slot = document.getElementById(`slot${i}`);
+        if (slot && slot.style.display === 'none') {
+          slot.style.display = 'block';
+          
+          // Focus on the newly shown paste area
+          const pasteArea = document.getElementById(`pasteArea${i}`);
+          if (pasteArea) {
+            setTimeout(() => pasteArea.focus(), 100);
+          }
+          
+          // Hide button if we've shown all 6 slots
+          if (i === 6) {
+            document.getElementById('addMoreImagesBtn').style.display = 'none';
+          }
+          
+          console.log(`📸 Showing slot ${i}`);
+          return;
+        }
       }
     }
 
@@ -4751,12 +4786,6 @@ Check console for full details.
         if (pasteArea) pasteArea.style.display = 'none';
         if (caption) caption.style.display = 'block';
         if (removeBtn) removeBtn.style.display = 'inline-block';
-        
-        // Show next slot if available
-        if (slotNum < 6) {
-          const nextSlot = document.getElementById(`slot${slotNum + 1}`);
-          if (nextSlot) nextSlot.style.display = 'block';
-        }
         
         console.log(`✅ Screenshot ${slotNum} uploaded successfully`);
       };
