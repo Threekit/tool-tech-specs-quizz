@@ -4495,7 +4495,14 @@ Check console for full details.
           toggleScreenshotSection();
         }
         
-        // Restore screenshot previews
+        // Restore screenshot previews - only show slots with images
+        // First, hide all slots except slot1
+        for (let i = 2; i <= 6; i++) {
+          const slot = document.getElementById(`slot${i}`);
+          if (slot) slot.style.display = 'none';
+        }
+        
+        // Then show only slots that have saved images
         for (let i = 1; i <= 6; i++) {
           if (screenshots[i]) {
             const img = document.getElementById(`preview${i}`);
@@ -4503,7 +4510,7 @@ Check console for full details.
             const caption = document.getElementById(`caption${i}`);
             const removeBtn = document.getElementById(`removeBtn${i}`);
             
-            // Show this slot first
+            // Show this slot
             const slot = document.getElementById(`slot${i}`);
             if (slot) slot.style.display = 'block';
             
@@ -4517,12 +4524,6 @@ Check console for full details.
               caption.style.display = 'block';
             }
             if (removeBtn) removeBtn.style.display = 'inline-block';
-            
-            // Show next empty slot if available
-            if (i < 6 && !screenshots[i + 1]) {
-              const nextSlot = document.getElementById(`slot${i + 1}`);
-              if (nextSlot) nextSlot.style.display = 'block';
-            }
           }
         }
         
@@ -4681,38 +4682,34 @@ Check console for full details.
     
     // Show next available image slot
     function showNextImageSlot() {
-      console.log('🔍 showNextImageSlot() called - Looking for next hidden slot...');
-      alert('Button clicked! Check console for details.');
+      console.log('🔍 Looking for next hidden slot...');
       
       for (let i = 2; i <= 6; i++) {
         const slot = document.getElementById(`slot${i}`);
         const computedDisplay = slot ? window.getComputedStyle(slot).display : 'not found';
-        console.log(`Checking slot${i}: element exists=${!!slot}, display=${computedDisplay}`);
         
         if (slot && computedDisplay === 'none') {
-          console.log(`🎯 Found hidden slot${i}, showing it now...`);
           slot.style.display = 'block';
           
           // Focus on the newly shown paste area
           const pasteArea = document.getElementById(`pasteArea${i}`);
           if (pasteArea) {
-            console.log(`Focusing on pasteArea${i}`);
             setTimeout(() => pasteArea.focus(), 100);
           }
           
           // Hide button if we've shown all 6 slots
           if (i === 6) {
-            console.log('All 6 slots shown, hiding Add More button');
             document.getElementById('addMoreImagesBtn').style.display = 'none';
           }
           
-          console.log(`✅ Successfully showed slot ${i}`);
+          console.log(`✅ Showing slot ${i}`);
           return;
         }
       }
       
-      console.log('⚠️ No more hidden slots available');
-      alert('No more slots available (all 6 are already visible)');
+      // All slots already visible - hide the button
+      document.getElementById('addMoreImagesBtn').style.display = 'none';
+      console.log('⚠️ All 6 slots already visible, hiding button');
     }
 
     // Setup screenshot paste functionality
