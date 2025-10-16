@@ -88,8 +88,9 @@
       </div>
       <div id="customerLoadedInfo" class="info-box success" style="display: none; margin-bottom: 1rem;">
         <h4>✅ Customer Data Loaded</h4>
-        <p>You can now either continue through the questionnaire or jump directly to your customized documentation.</p>
+        <p>You can now either regenerate the guide, continue through the questionnaire, or jump directly to your customized documentation.</p>
         <div style="margin-top: 1rem;">
+          <button class="next-btn" onclick="regenerateGuide()" style="background:#00D4AA; margin-right: 0.5rem;">🔄 Regenerate Guide</button>
           <button class="next-btn" onclick="goToDocumentation()" style="background:#22c55e; margin-right: 0.5rem;">📖 Go to Documentation Preview</button>
           <button class="next-btn" onclick="nextStep(1, 2)" style="background:#667EEA;">📝 Continue Questionnaire</button>
         </div>
@@ -2512,6 +2513,41 @@
       document.getElementById('step1-section').classList.add('hidden');
       console.log('👁️ Showing results in preview mode');
       showResults(clientConfig, true);
+    }
+
+    function regenerateGuide() {
+      console.log('🔄 Regenerate Guide clicked');
+      
+      // Validate step 1 to ensure we have the minimum required data
+      if (!validateStep(1)) {
+        console.log('❌ Step 1 validation failed');
+        alert('Please fill in all required fields in the Company Information section.');
+        return;
+      }
+
+      console.log('✅ Step 1 validation passed');
+
+      // Fill in default values for missing steps to ensure we have complete data
+      fillDefaultValuesForDocumentation();
+      
+      // Collect all form data
+      const formData = collectFormData();
+      console.log('📋 Form data collected:', formData);
+      
+      // Generate client configuration
+      const clientConfig = generateClientConfig(formData);
+      console.log('⚙️ Client config generated:', clientConfig);
+      
+      // Hide customer loaded info and step 1
+      document.getElementById('customerLoadedInfo').style.display = 'none';
+      document.getElementById('step1-section').classList.add('hidden');
+      
+      // Update progress to 100%
+      updateProgressBar(8);
+      
+      // Show results
+      console.log('✅ Showing regenerated guide');
+      showResults(clientConfig, false);
     }
 
     function fillDefaultValuesForDocumentation() {
