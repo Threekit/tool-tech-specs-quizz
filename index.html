@@ -298,7 +298,7 @@
           <input type="checkbox" id="includeScreenshots" onchange="toggleScreenshotSection()">
           <label for="includeScreenshots">📸 I want to share reference images of my 3D model structure</label>
         </div>
-        <p style="font-size:14px;color:#6b7280;margin-top:8px;">Upload up to 6 screenshots showing how your models are organized (e.g., Weight Sets, Benches, Accessories as separate objects)</p>
+        <p style="font-size:14px;color:#6b7280;margin-top:8px;">Upload up to 12 screenshots showing how your models are organized (e.g., Weight Sets, Benches, Accessories as separate objects)</p>
       </div>
 
       <div id="screenshotSection" class="form-group" style="display: none;">
@@ -372,6 +372,72 @@
             <img id="preview6" class="screenshot-preview" style="display:none; max-width: 100%; margin-top: 0.5rem; border-radius: 8px;">
             <input type="text" id="caption6" placeholder="Add a description" style="display:none; margin-top:0.5rem; width: 100%; padding: 0.5rem; border: 2px solid #e2e8f0; border-radius: 8px;">
             <button type="button" onclick="removeScreenshot(6)" class="next-btn" style="display:none; margin-top:0.5rem; background:#ef4444; padding: 0.5rem 1rem;" id="removeBtn6">Remove Image</button>
+          </div>
+          
+          <!-- Screenshot slot 7 -->
+          <div class="screenshot-slot" id="slot7" style="display:none; margin-top:1.5rem;">
+            <div class="paste-area" id="pasteArea7" tabindex="0">
+              <p style="margin-bottom: 0.5rem;">📋 Click here and press Ctrl+V to paste another image</p>
+              <p style="font-size:12px;color:#888;">Or drag & drop an image file</p>
+            </div>
+            <img id="preview7" class="screenshot-preview" style="display:none; max-width: 100%; margin-top: 0.5rem; border-radius: 8px;">
+            <input type="text" id="caption7" placeholder="Add a description" style="display:none; margin-top:0.5rem; width: 100%; padding: 0.5rem; border: 2px solid #e2e8f0; border-radius: 8px;">
+            <button type="button" onclick="removeScreenshot(7)" class="next-btn" style="display:none; margin-top:0.5rem; background:#ef4444; padding: 0.5rem 1rem;" id="removeBtn7">Remove Image</button>
+          </div>
+          
+          <!-- Screenshot slot 8 -->
+          <div class="screenshot-slot" id="slot8" style="display:none; margin-top:1.5rem;">
+            <div class="paste-area" id="pasteArea8" tabindex="0">
+              <p style="margin-bottom: 0.5rem;">📋 Click here and press Ctrl+V to paste another image</p>
+              <p style="font-size:12px;color:#888;">Or drag & drop an image file</p>
+            </div>
+            <img id="preview8" class="screenshot-preview" style="display:none; max-width: 100%; margin-top: 0.5rem; border-radius: 8px;">
+            <input type="text" id="caption8" placeholder="Add a description" style="display:none; margin-top:0.5rem; width: 100%; padding: 0.5rem; border: 2px solid #e2e8f0; border-radius: 8px;">
+            <button type="button" onclick="removeScreenshot(8)" class="next-btn" style="display:none; margin-top:0.5rem; background:#ef4444; padding: 0.5rem 1rem;" id="removeBtn8">Remove Image</button>
+          </div>
+          
+          <!-- Screenshot slot 9 -->
+          <div class="screenshot-slot" id="slot9" style="display:none; margin-top:1.5rem;">
+            <div class="paste-area" id="pasteArea9" tabindex="0">
+              <p style="margin-bottom: 0.5rem;">📋 Click here and press Ctrl+V to paste another image</p>
+              <p style="font-size:12px;color:#888;">Or drag & drop an image file</p>
+            </div>
+            <img id="preview9" class="screenshot-preview" style="display:none; max-width: 100%; margin-top: 0.5rem; border-radius: 8px;">
+            <input type="text" id="caption9" placeholder="Add a description" style="display:none; margin-top:0.5rem; width: 100%; padding: 0.5rem; border: 2px solid #e2e8f0; border-radius: 8px;">
+            <button type="button" onclick="removeScreenshot(9)" class="next-btn" style="display:none; margin-top:0.5rem; background:#ef4444; padding: 0.5rem 1rem;" id="removeBtn9">Remove Image</button>
+          </div>
+          
+          <!-- Screenshot slot 10 -->
+          <div class="screenshot-slot" id="slot10" style="display:none; margin-top:1.5rem;">
+            <div class="paste-area" id="pasteArea10" tabindex="0">
+              <p style="margin-bottom: 0.5rem;">📋 Click here and press Ctrl+V to paste another image</p>
+              <p style="font-size:12px;color:#888;">Or drag & drop an image file</p>
+            </div>
+            <img id="preview10" class="screenshot-preview" style="display:none; max-width: 100%; margin-top: 0.5rem; border-radius: 8px;">
+            <input type="text" id="caption10" placeholder="Add a description" style="display:none; margin-top:0.5rem; width: 100%; padding: 0.5rem; border: 2px solid #e2e8f0; border-radius: 8px;">
+            <button type="button" onclick="removeScreenshot(10)" class="next-btn" style="display:none; margin-top:0.5rem; background:#ef4444; padding: 0.5rem 1rem;" id="removeBtn10">Remove Image</button>
+          </div>
+          
+          <!-- Screenshot slot 11 -->
+          <div class="screenshot-slot" id="slot11" style="display:none; margin-top:1.5rem;">
+            <div class="paste-area" id="pasteArea11" tabindex="0">
+              <p style="margin-bottom: 0.5rem;">📋 Click here and press Ctrl+V to paste another image</p>
+              <p style="font-size:12px;color:#888;">Or drag & drop an image file</p>
+            </div>
+            <img id="preview11" class="screenshot-preview" style="display:none; max-width: 100%; margin-top: 0.5rem; border-radius: 8px;">
+            <input type="text" id="caption11" placeholder="Add a description" style="display:none; margin-top:0.5rem; width: 100%; padding: 0.5rem; border: 2px solid #e2e8f0; border-radius: 8px;">
+            <button type="button" onclick="removeScreenshot(11)" class="next-btn" style="display:none; margin-top:0.5rem; background:#ef4444; padding: 0.5rem 1rem;" id="removeBtn11">Remove Image</button>
+          </div>
+          
+          <!-- Screenshot slot 12 -->
+          <div class="screenshot-slot" id="slot12" style="display:none; margin-top:1.5rem;">
+            <div class="paste-area" id="pasteArea12" tabindex="0">
+              <p style="margin-bottom: 0.5rem;">📋 Click here and press Ctrl+V to paste another image</p>
+              <p style="font-size:12px;color:#888;">Or drag & drop an image file</p>
+            </div>
+            <img id="preview12" class="screenshot-preview" style="display:none; max-width: 100%; margin-top: 0.5rem; border-radius: 8px;">
+            <input type="text" id="caption12" placeholder="Add a description" style="display:none; margin-top:0.5rem; width: 100%; padding: 0.5rem; border: 2px solid #e2e8f0; border-radius: 8px;">
+            <button type="button" onclick="removeScreenshot(12)" class="next-btn" style="display:none; margin-top:0.5rem; background:#ef4444; padding: 0.5rem 1rem;" id="removeBtn12">Remove Image</button>
           </div>
         </div>
         
@@ -4497,13 +4563,13 @@ Check console for full details.
         
         // Restore screenshot previews - only show slots with images
         // First, hide all slots except slot1
-        for (let i = 2; i <= 6; i++) {
+        for (let i = 2; i <= 12; i++) {
           const slot = document.getElementById(`slot${i}`);
           if (slot) slot.style.display = 'none';
         }
         
         // Then show only slots that have saved images
-        for (let i = 1; i <= 6; i++) {
+        for (let i = 1; i <= 12; i++) {
           if (screenshots[i]) {
             const img = document.getElementById(`preview${i}`);
             const pasteArea = document.getElementById(`pasteArea${i}`);
@@ -4684,7 +4750,7 @@ Check console for full details.
     function showNextImageSlot() {
       console.log('🔍 Looking for next hidden slot...');
       
-      for (let i = 2; i <= 6; i++) {
+      for (let i = 2; i <= 12; i++) {
         const slot = document.getElementById(`slot${i}`);
         const computedDisplay = slot ? window.getComputedStyle(slot).display : 'not found';
         
@@ -4697,8 +4763,8 @@ Check console for full details.
             setTimeout(() => pasteArea.focus(), 100);
           }
           
-          // Hide button if we've shown all 6 slots
-          if (i === 6) {
+          // Hide button if we've shown all 12 slots
+          if (i === 12) {
             document.getElementById('addMoreImagesBtn').style.display = 'none';
           }
           
@@ -4709,12 +4775,12 @@ Check console for full details.
       
       // All slots already visible - hide the button
       document.getElementById('addMoreImagesBtn').style.display = 'none';
-      console.log('⚠️ All 6 slots already visible, hiding button');
+      console.log('⚠️ All 12 slots already visible, hiding button');
     }
 
     // Setup screenshot paste functionality
     function setupScreenshotPaste() {
-      for (let i = 1; i <= 6; i++) {
+      for (let i = 1; i <= 12; i++) {
         const pasteArea = document.getElementById(`pasteArea${i}`);
         const caption = document.getElementById(`caption${i}`);
         
@@ -4835,7 +4901,7 @@ Check console for full details.
       html += '<h3 style="color: #1e293b; margin-bottom: 1rem;">📸 Reference Images</h3>';
       html += '<p style="color: #64748b; margin-bottom: 1rem;">Screenshots provided by the client showing their 3D model organization:</p>';
       
-      for (let i = 1; i <= 6; i++) {
+      for (let i = 1; i <= 12; i++) {
         if (screenshots[i]) {
           html += `<div style="margin-bottom: 1.5rem;">`;
           html += `<img src="${screenshots[i].data}" style="max-width: 100%; border-radius: 8px; border: 2px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" alt="Reference Screenshot ${i}">`;
