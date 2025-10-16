@@ -574,7 +574,10 @@
 
     <!-- Step 8: Contact & Generate Guide -->
     <section id="step8-section" class="questionnaire-step hidden">
-      <h2>📞 Contact Information & Generate Guide</h2>
+      <h2 style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+        <img src="https://www.threekit.com/hubfs/Logos%20and%20Trademarks/threekit_logo_black.svg" alt="Threekit" style="height: 28px; width: auto;" />
+        <span>📞 Contact Information & Generate Guide</span>
+      </h2>
       <div class="form-row">
         <div class="form-group">
           <label for="contactName">Your Name *</label>
@@ -591,7 +594,6 @@
       </div>
       <div class="form-row">
         <button class="next-btn" onclick="prevStep(8, 7)" style="background:#6b7280">Previous</button>
-        <button class="next-btn" onclick="previewGuide()" style="background:#f59e0b">👁️ Preview Guide</button>
         <button class="next-btn" onclick="generateCustomGuide()">Generate My Custom Guide</button>
       </div>
     </section>
@@ -770,9 +772,23 @@
     }
 
     function generateCustomGuide() {
-      if (!validateStep(8)) {
+      console.log('📝 Generate Custom Guide clicked');
+      
+      // Validate Step 1 at minimum (company info)
+      if (!validateStep(1)) {
+        alert('Please fill in all required Company Information fields.');
         return;
       }
+      
+      // If we're on Step 8, validate it
+      const step8Visible = !document.getElementById('step8-section').classList.contains('hidden');
+      if (step8Visible && !validateStep(8)) {
+        alert('Please fill in your contact information.');
+        return;
+      }
+
+      // Fill in default values for any missing steps
+      fillDefaultValuesForDocumentation();
 
       // Collect all form data
       const formData = collectFormData();
@@ -783,8 +799,18 @@
       // Generate client configuration
       const clientConfig = generateClientConfig(formData);
       
+      // Update progress to 100%
+      updateProgressBar(8);
+      
+      // Hide all steps
+      document.querySelectorAll('.questionnaire-step').forEach(step => {
+        step.classList.add('hidden');
+      });
+      
       // Show results
       showResults(clientConfig);
+      
+      console.log('✅ Guide generated successfully');
     }
 
     function updateCurrentGuide() {
